@@ -1,0 +1,15 @@
+{
+  "name": "consol",
+  "module": "src/index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/lodash": "^4.17.13",
+    "@types/strftime": "^0.9.8",
+    "typescript": "latest"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "strftime": "^0.10.3"
+  }
+}
