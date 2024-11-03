@@ -8,7 +8,11 @@
 			"recommended": true,
 			"style": {
 				"useEnumInitializers": "off",
-				"noInferrableTypes": "off"
+				"noInferrableTypes": "off",
+				"noParameterAssign": "off"
+			},
+			"suspicious": {
+				"noExplicitAny": "off"
 			}
 		}
 	}

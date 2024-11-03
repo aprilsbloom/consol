@@ -1,10 +1,8 @@
+export type Color = 'success' | 'warning' | 'error' | 'info' | 'debug' | 'value';
 export interface LoggerOptions {
 	timeFormat: string;
 	colors: {
-		success: string;
-		warning: string;
-		error: string;
-		info: string;
-		debug: string;
+		str: Record<Color, string>;
+		ansi: Record<Color, string>;
 	};
 }
