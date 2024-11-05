@@ -46,7 +46,16 @@ export class OptionsManager {
 		if (options.colors) this.setColors(options.colors);
 	}
 
+	// Log level
+	public setLogLevel(level: LogLevel) {
+		this.options.logLevel = level;
+	}
+
 	// Formats
+	public setFormats(formats: Partial<LoggerOptions['formats']>) {
+		this.options.formats = merge(this.options.formats, formats);
+	}
+
 	public setLogFormat(format: string) {
 		this.options.formats.log = format;
 	}
@@ -90,6 +99,11 @@ export class OptionsManager {
 		this.options.colors.ansi.error = this.hexToAnsi(color);
 	}
 
+	public setFatalColor(color: string) {
+		this.options.colors.str.fatal = color;
+		this.options.colors.ansi.fatal = this.hexToAnsi(color);
+	}
+
 	public setInfoColor(color: string) {
 		this.options.colors.str.info = color;
 		this.options.colors.ansi.info = this.hexToAnsi(color);
@@ -98,5 +112,34 @@ export class OptionsManager {
 	public setDebugColor(color: string) {
 		this.options.colors.str.debug = color;
 		this.options.colors.ansi.debug = this.hexToAnsi(color);
+	}
+
+	// Strings
+	public setStrings(strings: Partial<LoggerOptions['strings']>) {
+		this.options.strings = merge(this.options.strings, strings);
+	}
+
+	public setSuccessString(str: string) {
+		this.options.strings.success = str;
+	}
+
+	public setWarningString(str: string) {
+		this.options.strings.warning = str;
+	}
+
+	public setErrorString(str: string) {
+		this.options.strings.error = str;
+	}
+
+	public setFatalString(str: string) {
+		this.options.strings.fatal = str;
+	}
+
+	public setInfoString(str: string) {
+		this.options.strings.info = str;
+	}
+
+	public setDebugString(str: string) {
+		this.options.strings.debug = str;
 	}
 }

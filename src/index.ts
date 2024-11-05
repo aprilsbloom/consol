@@ -1,7 +1,7 @@
 import strftime from 'strftime';
 import { OptionsManager } from './optionsManager';
 import { LogLevel } from './enums';
-import type { LoggerOptions } from './types.d.ts';
+import type { LoggerOptions, LogType } from './types.d.ts';
 
 export class Logger extends OptionsManager {
 	constructor(options: Partial<LoggerOptions> = {}) {
@@ -18,7 +18,7 @@ export class Logger extends OptionsManager {
 
 		const fmtMessage = this.options.formats.log
 			.replaceAll('{date}', this.fetchDate())
-			.replaceAll('{level}', LogLevel[level]);
+			.replaceAll('{level}', this.options.strings[LogLevel[level].toLowerCase() as LogType]!);
 
 		const messageStr = args.length ?
 			// biome-ignore lint/style/useTemplate: template literals make it harder to read
@@ -33,12 +33,33 @@ export class Logger extends OptionsManager {
 		console.log(fmtMessage.replaceAll('{message}', messageStr));
 	}
 
+	public success(message: string, ...args: any[]) {
+		this.log(LogLevel.Success, message, ...args);
+	}
+
+	public warning(message: string, ...args: any[]) {
+		this.log(LogLevel.Warning, message, ...args);
+	}
+
+	public error(message: string, ...args: any[]) {
+		this.log(LogLevel.Error, message, ...args);
+	}
+
+	public fatal(message: string, ...args: any[]) {
+		this.log(LogLevel.Fatal, message, ...args);
+		process.exit(1);
+	}
+
 	public info(message: string, ...args: any[]) {
 		this.log(LogLevel.Info, message, ...args);
+	}
+
+	public debug(message: string, ...args: any[]) {
+		this.log(LogLevel.Debug, message, ...args);
 	}
 }
 
 const logger = new Logger();
-logger.info('meow mrrp meow', {
+logger.success('meow mrrp meow', {
 	meow: 'mrrp',
 });
