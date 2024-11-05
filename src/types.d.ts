@@ -1,6 +1,6 @@
 import type { LogLevel } from "./enums";
 
-export type LogType = 'success' | 'warning' | 'error' | 'fatal' | 'info' | 'debug';
+export type LogType = 'info' | 'success' | 'warning' | 'error' | 'fatal' | 'debug';
 
 export interface LoggerOptions {
 	logLevel: LogLevel;

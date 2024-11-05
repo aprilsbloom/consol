@@ -11,28 +11,28 @@ export class OptionsManager {
 		},
 		colors: {
 			str: {
-				success: 'green',
-				warning: 'yellow',
-				error: 'red',
-				fatal: 'red',
-				info: 'blue',
-				debug: 'gray',
+				info: '',
+				success: '',
+				warning: '',
+				error: '',
+				fatal: '',
+				debug: '',
 			},
 			ansi: {
+				info: this.hexToAnsi('#0000FF'),
 				success: this.hexToAnsi('#00FF00'),
 				warning: this.hexToAnsi('#FFFF00'),
 				error: this.hexToAnsi('#FF0000'),
 				fatal: this.hexToAnsi('#FF0000'),
-				info: this.hexToAnsi('#0000FF'),
 				debug: this.hexToAnsi('#808080'),
 			},
 		},
 		strings: {
+			info: 'INFO',
 			success: 'SUCCESS',
 			warning: 'WARNING',
 			error: 'ERROR',
 			fatal: 'FATAL',
-			info: 'INFO',
 			debug: 'DEBUG',
 		},
 	};
@@ -84,6 +84,11 @@ export class OptionsManager {
 		}
 	}
 
+	public setInfoColor(color: string) {
+		this.options.colors.str.info = color;
+		this.options.colors.ansi.info = this.hexToAnsi(color);
+	}
+
 	public setSuccessColor(color: string) {
 		this.options.colors.str.success = color;
 		this.options.colors.ansi.success = this.hexToAnsi(color);
@@ -104,11 +109,6 @@ export class OptionsManager {
 		this.options.colors.ansi.fatal = this.hexToAnsi(color);
 	}
 
-	public setInfoColor(color: string) {
-		this.options.colors.str.info = color;
-		this.options.colors.ansi.info = this.hexToAnsi(color);
-	}
-
 	public setDebugColor(color: string) {
 		this.options.colors.str.debug = color;
 		this.options.colors.ansi.debug = this.hexToAnsi(color);
@@ -117,6 +117,10 @@ export class OptionsManager {
 	// Strings
 	public setStrings(strings: Partial<LoggerOptions['strings']>) {
 		this.options.strings = merge(this.options.strings, strings);
+	}
+
+	public setInfoString(str: string) {
+		this.options.strings.info = str;
 	}
 
 	public setSuccessString(str: string) {
@@ -133,10 +137,6 @@ export class OptionsManager {
 
 	public setFatalString(str: string) {
 		this.options.strings.fatal = str;
-	}
-
-	public setInfoString(str: string) {
-		this.options.strings.info = str;
 	}
 
 	public setDebugString(str: string) {

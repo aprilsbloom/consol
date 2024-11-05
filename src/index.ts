@@ -33,6 +33,10 @@ export class Logger extends OptionsManager {
 		console.log(fmtMessage.replaceAll('{message}', messageStr));
 	}
 
+	public info(message: string, ...args: any[]) {
+		this.log(LogLevel.Info, message, ...args);
+	}
+
 	public success(message: string, ...args: any[]) {
 		this.log(LogLevel.Success, message, ...args);
 	}
@@ -48,10 +52,6 @@ export class Logger extends OptionsManager {
 	public fatal(message: string, ...args: any[]) {
 		this.log(LogLevel.Fatal, message, ...args);
 		process.exit(1);
-	}
-
-	public info(message: string, ...args: any[]) {
-		this.log(LogLevel.Info, message, ...args);
 	}
 
 	public debug(message: string, ...args: any[]) {
