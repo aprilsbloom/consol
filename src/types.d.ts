@@ -1,8 +1,23 @@
-export type Color = 'success' | 'warning' | 'error' | 'info' | 'debug' | 'value';
+export type LogType = 'success' | 'warning' | 'error' | 'fatal' | 'info' | 'debug' | 'value';
+
 export interface LoggerOptions {
-	timeFormat: string;
+	logLevel: LogLevel;
+	formats: {
+		log: string;
+		time: string;
+	},
 	colors: {
-		str: Record<Color, string>;
-		ansi: Record<Color, string>;
+		str: Record<LogType, string>;
+		ansi: Record<LogType, string>;
 	};
+	strings: Partial<Record<LogType, string>>;
+}
+
+export enum LogLevel {
+	INFO,
+	SUCCESS,
+	WARNING,
+	ERROR,
+	FATAL,
+	DEBUG,
 }
