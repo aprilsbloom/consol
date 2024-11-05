@@ -1,4 +1,5 @@
 import { merge } from 'lodash';
+import { hexToAnsi } from './utils';
 import { LogLevel } from './enums';
 import type { LogType, LoggerOptions } from './types';
 
@@ -19,12 +20,12 @@ export class OptionsManager {
 				debug: '',
 			},
 			ansi: {
-				info: this.hexToAnsi('#0000FF'),
-				success: this.hexToAnsi('#00FF00'),
-				warning: this.hexToAnsi('#FFFF00'),
-				error: this.hexToAnsi('#FF0000'),
-				fatal: this.hexToAnsi('#FF0000'),
-				debug: this.hexToAnsi('#808080'),
+				info: hexToAnsi('#0000FF'),
+				success: hexToAnsi('#00FF00'),
+				warning: hexToAnsi('#FFFF00'),
+				error: hexToAnsi('#FF0000'),
+				fatal: hexToAnsi('#FF0000'),
+				debug: hexToAnsi('#808080'),
 			},
 		},
 		strings: {
@@ -65,53 +66,42 @@ export class OptionsManager {
 	}
 
 	// Colors
-	private hexToAnsi(hex: string, isBackground: boolean = false): string {
-		if (!hex.startsWith('#')) hex = `#${hex}`;
-		if (!/^#[0-9A-F]{6}$/i.test(hex)) throw new Error('Invalid hex color string!');
-
-		const r = Number.parseInt(hex.slice(1, 3), 16).toString();
-		const g = Number.parseInt(hex.slice(3, 5), 16).toString();
-		const b = Number.parseInt(hex.slice(5, 7), 16).toString();
-
-		return `\x1b${isBackground ? '[48' : '[38'};2;${r};${g};${b}m`;
-	}
-
 	public setColors(colors: Partial<LoggerOptions['colors']>) {
 		this.options.colors = merge(this.options.colors, colors);
 
 		for (const [key, value] of Object.entries(this.options.colors.str) as [LogType, string][]) {
-			this.options.colors.ansi[key] = this.hexToAnsi(value);
+			this.options.colors.ansi[key] = hexToAnsi(value);
 		}
 	}
 
 	public setInfoColor(color: string) {
 		this.options.colors.str.info = color;
-		this.options.colors.ansi.info = this.hexToAnsi(color);
+		this.options.colors.ansi.info = hexToAnsi(color);
 	}
 
 	public setSuccessColor(color: string) {
 		this.options.colors.str.success = color;
-		this.options.colors.ansi.success = this.hexToAnsi(color);
+		this.options.colors.ansi.success = hexToAnsi(color);
 	}
 
 	public setWarningColor(color: string) {
 		this.options.colors.str.warning = color;
-		this.options.colors.ansi.warning = this.hexToAnsi(color);
+		this.options.colors.ansi.warning = hexToAnsi(color);
 	}
 
 	public setErrorColor(color: string) {
 		this.options.colors.str.error = color;
-		this.options.colors.ansi.error = this.hexToAnsi(color);
+		this.options.colors.ansi.error = hexToAnsi(color);
 	}
 
 	public setFatalColor(color: string) {
 		this.options.colors.str.fatal = color;
-		this.options.colors.ansi.fatal = this.hexToAnsi(color);
+		this.options.colors.ansi.fatal = hexToAnsi(color);
 	}
 
 	public setDebugColor(color: string) {
 		this.options.colors.str.debug = color;
-		this.options.colors.ansi.debug = this.hexToAnsi(color);
+		this.options.colors.ansi.debug = hexToAnsi(color);
 	}
 
 	// Strings
