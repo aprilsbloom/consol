@@ -1,12 +1,12 @@
 import { merge } from 'lodash';
-import { LogLevel } from './types';
+import { LogLevel } from './enums';
 import type { LogType, LoggerOptions } from './types';
 
 export class OptionsManager {
 	protected options: LoggerOptions = {
-		logLevel: LogLevel.FATAL,
+		logLevel: LogLevel.Fatal,
 		formats: {
-			log: '{time} {level} {message}',
+			log: '{date} {level} {message}',
 			time: '%Y/%m/%d %H:%M:%S',
 		},
 		colors: {
@@ -17,7 +17,6 @@ export class OptionsManager {
 				fatal: 'red',
 				info: 'blue',
 				debug: 'gray',
-				value: 'gray',
 			},
 			ansi: {
 				success: this.hexToAnsi('#00FF00'),
@@ -26,7 +25,6 @@ export class OptionsManager {
 				fatal: this.hexToAnsi('#FF0000'),
 				info: this.hexToAnsi('#0000FF'),
 				debug: this.hexToAnsi('#808080'),
-				value: this.hexToAnsi('#808080'),
 			},
 		},
 		strings: {

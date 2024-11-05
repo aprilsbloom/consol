@@ -1,4 +1,6 @@
-export type LogType = 'success' | 'warning' | 'error' | 'fatal' | 'info' | 'debug' | 'value';
+import type { LogLevel } from "./enums";
+
+export type LogType = 'success' | 'warning' | 'error' | 'fatal' | 'info' | 'debug';
 
 export interface LoggerOptions {
 	logLevel: LogLevel;
@@ -11,13 +13,4 @@ export interface LoggerOptions {
 		ansi: Record<LogType, string>;
 	};
 	strings: Partial<Record<LogType, string>>;
-}
-
-export enum LogLevel {
-	INFO,
-	SUCCESS,
-	WARNING,
-	ERROR,
-	FATAL,
-	DEBUG,
 }
