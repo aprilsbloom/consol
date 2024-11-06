@@ -7,25 +7,20 @@ export class OptionsManager {
 	protected options: LoggerOptions = {
 		logLevel: LogLevel.Fatal,
 		formats: {
-			log: '{date} {level} {message}',
+			log: "{date} {colors.level}{level}{colors.reset} {message}",
 			time: '%Y/%m/%d %H:%M:%S',
 		},
 		colors: {
 			str: {
-				info: '',
-				success: '',
-				warning: '',
-				error: '',
-				fatal: '',
-				debug: '',
+				info: '#a8a8a8',
+				success: '#79ef77',
+				warning: '#efe777',
+				error: '#ef8d77',
+				fatal: '#ef8d77',
+				debug: '#a8a8a8',
 			},
 			ansi: {
-				info: hexToAnsi('#0000FF'),
-				success: hexToAnsi('#00FF00'),
-				warning: hexToAnsi('#FFFF00'),
-				error: hexToAnsi('#FF0000'),
-				fatal: hexToAnsi('#FF0000'),
-				debug: hexToAnsi('#808080'),
+				reset: '\x1b[0m',
 			},
 		},
 		strings: {
@@ -43,8 +38,12 @@ export class OptionsManager {
 	}
 
 	public setOptions(options: Partial<LoggerOptions>) {
+		if (options.colors?.ansi) {
+			(options.colors.ansi as any) = undefined;
+		}
+
 		this.options = merge(this.options, options);
-		if (options.colors) this.setColors(options.colors);
+		if (this.options.colors) this.setColors(this.options.colors);
 	}
 
 	// Log level

@@ -10,7 +10,7 @@ export interface LoggerOptions {
 	},
 	colors: {
 		str: Record<LogType, string>;
-		ansi: Record<LogType, string>;
+		ansi: Partial<Record<LogType, string>> & { reset: string; };
 	};
 	strings: Partial<Record<LogType, string>>;
 }
