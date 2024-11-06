@@ -9,7 +9,7 @@ export class Logger extends OptionsManager {
 	}
 
 	private fetchDate(date: Date = new Date(), format: string = '') {
-		if (!format) format = this.options.formats.time;
+		if (!format) format = this.options.formats.date;
 		return strftime(format, date);
 	}
 
@@ -18,13 +18,13 @@ export class Logger extends OptionsManager {
 
 		const levelLowercase = LogLevel[level].toLowerCase() as LogType;
 		const messageStr = args.length ?
-			// biome-ignore lint/style/useTemplate: template literals make it harder to read
+			// biome-ignore lint/style/useTemplate: template literals make the code harder to read here lol
 		  message + " " + args.map(item => {
 				if (typeof item === 'string') return item;
 				if (typeof item === 'object') return JSON.stringify(item, null, 2);
+				if (item?.toString) return item.toString();
 				return item;
-			})
-			.join(' ') :
+			}).join(' ') :
 			message;
 
 		// add date, log level & message
@@ -44,7 +44,7 @@ export class Logger extends OptionsManager {
 			.replaceAll('{colors.debug}', this.options.colors.ansi.debug!)
 			.replaceAll('{colors.reset}', this.options.colors.ansi.reset);
 
-		console.log(fmtdMessage.replaceAll('{message}', messageStr));
+		console.log(fmtdMessage);
 	}
 
 	public info(message: string, ...args: any[]) {
@@ -74,7 +74,6 @@ export class Logger extends OptionsManager {
 }
 
 const logger = new Logger();
-logger.setLogLevel(LogLevel.Debug);
 logger.info('meow mrrp meow');
 logger.success('meow mrrp meow');
 logger.warning('meow mrrp meow');

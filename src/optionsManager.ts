@@ -9,6 +9,7 @@ export class OptionsManager {
 		formats: {
 			log: "{date} {colors.level}{level}{colors.reset} {message}",
 			time: '%Y/%m/%d %H:%M:%S',
+			altTime: '%Y-%m-%d',
 		},
 		colors: {
 			str: {
@@ -60,8 +61,12 @@ export class OptionsManager {
 		this.options.formats.log = format;
 	}
 
-	public setTimeFormat(format: string) {
-		this.options.formats.time = format;
+	public setDateFormat(format: string) {
+		this.options.formats.date = format;
+	}
+
+	public setAltDateFormat(format: string) {
+		this.options.formats.altDate = format;
 	}
 
 	// Colors

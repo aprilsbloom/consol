@@ -6,7 +6,8 @@ export interface LoggerOptions {
 	logLevel: LogLevel;
 	formats: {
 		log: string;
-		time: string;
+		date: string;
+		altDate: string;
 	},
 	colors: {
 		str: Record<LogType, string>;
