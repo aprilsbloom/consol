@@ -8,8 +8,8 @@ export class OptionsManager {
 		logLevel: LogLevel.Fatal,
 		formats: {
 			log: "{date} {colors.level}{level}{colors.reset} {message}",
-			time: '%Y/%m/%d %H:%M:%S',
-			altTime: '%Y-%m-%d',
+			date: '%Y/%m/%d %H:%M:%S',
+			altDate: '%Y-%m-%d',
 		},
 		colors: {
 			str: {

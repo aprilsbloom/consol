@@ -8,7 +8,7 @@ export class Logger extends OptionsManager {
 		super(options);
 	}
 
-	private fetchDate(date: Date = new Date(), format: string = '') {
+	private fetchDate(format: string = '', date: Date = new Date()) {
 		if (!format) format = this.options.formats.date;
 		return strftime(format, date);
 	}
@@ -30,6 +30,7 @@ export class Logger extends OptionsManager {
 		// add date, log level & message
 		let fmtdMessage = this.options.formats.log
 			.replaceAll('{date}', this.fetchDate())
+			.replaceAll('{altDate}', this.fetchDate(this.options.formats.altDate))
 			.replaceAll('{level}', this.options.strings[levelLowercase]!)
 			.replaceAll('{message}', messageStr);
 
