@@ -1,4 +1,5 @@
 export function hexToAnsi(hex: string, background: boolean = false): string {
+	hex = hex.toUpperCase();
 	if (hex.startsWith('#')) hex = hex.slice(1);
 	if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
 	if (!/^[0-9A-F]{6}$/i.test(hex)) throw new Error('Invalid hex color string!');

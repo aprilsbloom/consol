@@ -2,6 +2,7 @@ import strftime from 'strftime';
 import { OptionsManager } from './optionsManager';
 import { LogLevel } from './enums';
 import type { LoggerOptions, LogType } from './types.d.ts';
+import { hexToAnsi } from './utils.ts';
 
 export class Logger extends OptionsManager {
 	constructor(options: Partial<LoggerOptions> = {}) {
@@ -15,28 +16,34 @@ export class Logger extends OptionsManager {
 
 	private formatBase(message: string, level: LogLevel): string {
 		return this.options.formats.log
-			.replaceAll('{date}', this.fetchDate())
-			.replaceAll('{altDate}', this.fetchDate(this.options.formats.altDate))
-			.replaceAll('{level}', this.options.strings[LogLevel[level].toLowerCase() as LogType]!)
-			.replaceAll('{message}', message);
+			.replaceAll('!{date}', this.fetchDate())
+			.replaceAll('!{altDate}', this.fetchDate(this.options.formats.altDate))
+			.replaceAll('!{level}', this.options.strings[LogLevel[level].toLowerCase() as LogType]!)
+			.replaceAll('!{message}', message);
 	}
 
 	private formatColors(message: string, level: LogLevel): string {
+		// replace all template hex values
+		message = message.replace(/!{hex:([0-9a-fA-F]{6})}/g, (_, hex) => {
+			return hexToAnsi(hex);
+		});
+
+		// then replace all color values
 		return message
-			.replaceAll('{colors.level}', this.options.colors.ansi[LogLevel[level].toLowerCase() as LogType]!)
-			.replaceAll('{colors.info}', this.options.colors.ansi.info!)
-			.replaceAll('{colors.success}', this.options.colors.ansi.success!)
-			.replaceAll('{colors.warning}', this.options.colors.ansi.warning!)
-			.replaceAll('{colors.error}', this.options.colors.ansi.error!)
-			.replaceAll('{colors.fatal}', this.options.colors.ansi.fatal!)
-			.replaceAll('{colors.debug}', this.options.colors.ansi.debug!)
-			.replaceAll('{colors.reset}', this.options.colors.ansi.reset);
+			.replaceAll('!{colors.level}', this.options.colors.ansi[LogLevel[level].toLowerCase() as LogType]!)
+			.replaceAll('!{colors.info}', this.options.colors.ansi.info!)
+			.replaceAll('!{colors.success}', this.options.colors.ansi.success!)
+			.replaceAll('!{colors.warning}', this.options.colors.ansi.warning!)
+			.replaceAll('!{colors.error}', this.options.colors.ansi.error!)
+			.replaceAll('!{colors.fatal}', this.options.colors.ansi.fatal!)
+			.replaceAll('!{colors.debug}', this.options.colors.ansi.debug!)
+			.replaceAll('!{colors.reset}', this.options.colors.ansi.reset);
 	}
 
 	private log(level: LogLevel, message: string, ...args: any[]) {
 		if (level > this.options.logLevel) return;
 
-		const messageStr = args.length ?
+		const messageStr = (args.length ?
 			// biome-ignore lint/style/useTemplate: template literals make the code harder to read here lol
 		  message + " " + args.map(item => {
 				if (typeof item === 'string') return item;
@@ -44,12 +51,13 @@ export class Logger extends OptionsManager {
 				if (item?.toString) return item.toString();
 				return item;
 			}).join(' ') :
-			message;
+			message)
+			.replaceAll("!{", "!​{"); // zero-width space to prevent template literals in messages
 
 		let fmtdMessage = this.formatBase(messageStr, level); // add date, log level & message
 		fmtdMessage = this.formatColors(fmtdMessage, level); // add colors
 
-		console.log(fmtdMessage);
+		console.log(this.options.colors.ansi.reset + fmtdMessage);
 	}
 
 	public info(message: string, ...args: any[]) {
@@ -79,7 +87,7 @@ export class Logger extends OptionsManager {
 }
 
 const logger = new Logger();
-logger.info('meow mrrp meow');
+logger.info('!{hex:000000}meow mrrp meow');
 logger.success('meow mrrp meow');
 logger.warning('meow mrrp meow');
 logger.debug('meow mrrp meow');

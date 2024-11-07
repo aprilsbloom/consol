@@ -7,7 +7,7 @@ export class OptionsManager {
 	protected options: LoggerOptions = {
 		logLevel: LogLevel.Fatal,
 		formats: {
-			log: "{date} {colors.level}{level}{colors.reset} {message}",
+			log: "!{date} !{colors.level}!{level}!{colors.reset} !{message}",
 			date: '%Y/%m/%d %H:%M:%S',
 			altDate: '%Y-%m-%d',
 		},
