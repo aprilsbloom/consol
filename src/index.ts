@@ -14,8 +14,8 @@ export class Logger extends OptionsManager {
 		return strftime(format, date);
 	}
 
-	private formatBase(message: string, level: LogLevel): string {
-		return this.options.formats.log
+	private formatBase(format: string, message: string, level: LogLevel): string {
+		return format
 			.replaceAll('!{date}', this.fetchDate())
 			.replaceAll('!{altDate}', this.fetchDate(this.options.formats.altDate))
 			.replaceAll('!{level}', this.options.strings[LogLevel[level].toLowerCase() as LogType]!)
@@ -54,7 +54,7 @@ export class Logger extends OptionsManager {
 			message)
 			.replaceAll("!{", "!​{"); // zero-width space to prevent template literals in messages
 
-		let fmtdMessage = this.formatBase(messageStr, level); // add date, log level & message
+		let fmtdMessage = this.formatBase(this.options.formats.log, messageStr, level); // add date, log level & message
 		fmtdMessage = this.formatColors(fmtdMessage, level); // add colors
 
 		console.log(this.options.colors.ansi.reset + fmtdMessage);
