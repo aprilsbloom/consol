@@ -24,6 +24,11 @@ export class Logger extends OptionsManager {
 
 	private formatColors(message: string, level: LogLevel): string {
 		return message
+			.replaceAll(/!{styles.([a-z]+)}/g, (full, style: Style) => {
+				const code = this.options.styles[style];
+				if (!code) return full;
+				return code;
+			})
 			.replaceAll(/!{hex:(b|f)g:([0-9a-fA-F]{3}|[0-9a-fA-F]{6})}/g, (_, type, hex) => {
 				return hexToAnsi(hex, type === 'b');
 			})
@@ -32,11 +37,6 @@ export class Logger extends OptionsManager {
 				const code = this.options.colors[color].ansi;
 				if (!code) return full;
 				return code
-			})
-			.replaceAll(/!{styles.([a-z]+)}/g, (full, style: Style) => {
-				const code = this.options.styles[style];
-				if (!code) return full;
-				return code;
 			})
 	}
 
