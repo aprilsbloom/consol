@@ -1,7 +1,7 @@
 import strftime from 'strftime';
 import { OptionsManager } from './optionsManager';
 import { LogLevel } from './enums';
-import type { LoggerOptions, LogType } from './types.d.ts';
+import type { LoggerOptions, LogType, Style } from './types.d.ts';
 import { hexToAnsi } from './utils.ts';
 
 export class Logger extends OptionsManager {
@@ -24,17 +24,20 @@ export class Logger extends OptionsManager {
 
 	private formatColors(message: string, level: LogLevel): string {
 		return message
-			.replaceAll(/!{hex:([0-9a-fA-F]{6})}/g, (_, hex) => {
-				return hexToAnsi(hex);
+			.replaceAll(/!{hex:(b|f)g:([0-9a-fA-F]{3}|[0-9a-fA-F]{6})}/g, (_, type, hex) => {
+				return hexToAnsi(hex, type === 'b');
 			})
 			.replaceAll('!{colors.level}', this.options.colors[LogLevel[level].toLowerCase() as LogType].ansi!)
-			.replaceAll('!{colors.info}', this.options.colors.info.ansi!)
-			.replaceAll('!{colors.success}', this.options.colors.success.ansi!)
-			.replaceAll('!{colors.warning}', this.options.colors.warning.ansi!)
-			.replaceAll('!{colors.error}', this.options.colors.error.ansi!)
-			.replaceAll('!{colors.fatal}', this.options.colors.fatal.ansi!)
-			.replaceAll('!{colors.debug}', this.options.colors.debug.ansi!)
-			.replaceAll('!{colors.reset}', this.options.colors.reset);
+			.replaceAll(/!{colors.([a-z]+)}/g, (full, color: LogType) => {
+				const code = this.options.colors[color].ansi;
+				if (!code) return full;
+				return code
+			})
+			.replaceAll(/!{styles.([a-z]+)}/g, (full, style: Style) => {
+				const code = this.options.styles[style];
+				if (!code) return full;
+				return code;
+			})
 	}
 
 	private log(level: LogLevel, message: string, ...args: any[]) {
@@ -54,7 +57,7 @@ export class Logger extends OptionsManager {
 		let fmtdMessage = this.formatBase(this.options.formats.log, messageStr, level); // add date, log level & message
 		fmtdMessage = this.formatColors(fmtdMessage, level); // add colors
 
-		console.log(this.options.colors.reset + fmtdMessage);
+		console.log(this.options.styles.reset + fmtdMessage);
 	}
 
 	public info(message: string, ...args: any[]) {

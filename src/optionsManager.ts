@@ -7,7 +7,7 @@ export class OptionsManager {
 	protected options: LoggerOptions = {
 		logLevel: LogLevel.Fatal,
 		formats: {
-			log: "!{date} !{colors.level}!{level}!{colors.reset} !{message}",
+			log: "!{date} !{colors.level}!{level}!{styles.reset} !{message}",
 			date: '%Y/%m/%d %H:%M:%S',
 			altDate: '%Y-%m-%d',
 		},
@@ -30,7 +30,13 @@ export class OptionsManager {
 			debug: {
 				hex: '#a8a8a8',
 			},
+		},
+		styles: {
 			reset: '\x1b[0m',
+			bold: '\x1b[1m',
+			italic: '\x1b[3m',
+			underline: '\x1b[4m',
+			strikethrough: '\x1b[9m',
 		},
 		strings: {
 			info: 'INFO',
@@ -47,10 +53,6 @@ export class OptionsManager {
 	}
 
 	public setOptions(options: Partial<LoggerOptions>) {
-		if (options.colors?.ansi) {
-			(options.colors.ansi as any) = undefined;
-		}
-
 		this.options = merge(this.options, options);
 		if (this.options.colors) this.setColors(this.options.colors);
 	}
@@ -81,14 +83,13 @@ export class OptionsManager {
 	public setColors(colors: Partial<LoggerOptions['colors']>) {
 		this.options.colors = merge(this.options.colors, colors);
 
-		for (const key of Object.keys(this.options.colors)) {
+		for (const key of Object.keys(this.options.colors) as LogType[]) {
 			this.setColor(key, this.options.colors[key]?.hex);
 		}
 	}
 
 	private setColor(type: keyof LoggerOptions['colors'], color: string) {
 		if (!type || !color) return;
-		if (typeof this.options.colors[type] === 'string') return;
 		this.options.colors[type] = {
 			hex: color,
 			ansi: hexToAnsi(color),

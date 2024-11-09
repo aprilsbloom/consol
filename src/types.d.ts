@@ -1,6 +1,7 @@
 import type { LogLevel } from "./enums";
 
 export type LogType = 'info' | 'success' | 'warning' | 'error' | 'fatal' | 'debug';
+export type Style = 'reset' | 'bold' | 'italic' | 'underline' | 'strikethrough';
 
 export interface LoggerOptions {
 	logLevel: LogLevel;
@@ -9,7 +10,8 @@ export interface LoggerOptions {
 		date: string;
 		altDate: string;
 	},
-	colors: Record<string, Color> & { reset: string };
+	colors: Record<LogType, Color>;
+	styles: Record<Style, string>;
 	strings: Record<LogType, string>;
 }
 
