@@ -12,17 +12,25 @@ export class OptionsManager {
 			altDate: '%Y-%m-%d',
 		},
 		colors: {
-			str: {
-				info: '#a8a8a8',
-				success: '#79ef77',
-				warning: '#efe777',
-				error: '#ef8d77',
-				fatal: '#ef8d77',
-				debug: '#a8a8a8',
+			info: {
+				hex: '#a8a8a8',
 			},
-			ansi: {
-				reset: '\x1b[0m',
+			success: {
+				hex: '#79ef77',
 			},
+			warning: {
+				hex: '#efe777',
+			},
+			error: {
+				hex: '#ef8d77',
+			},
+			fatal: {
+				hex: '#ef8d77',
+			},
+			debug: {
+				hex: '#a8a8a8',
+			},
+			reset: '\x1b[0m',
 		},
 		strings: {
 			info: 'INFO',
@@ -73,39 +81,42 @@ export class OptionsManager {
 	public setColors(colors: Partial<LoggerOptions['colors']>) {
 		this.options.colors = merge(this.options.colors, colors);
 
-		for (const [key, value] of Object.entries(this.options.colors.str) as [LogType, string][]) {
-			this.options.colors.ansi[key] = hexToAnsi(value);
+		for (const key of Object.keys(this.options.colors)) {
+			this.setColor(key, this.options.colors[key]?.hex);
+		}
+	}
+
+	private setColor(type: keyof LoggerOptions['colors'], color: string) {
+		if (!type || !color) return;
+		if (typeof this.options.colors[type] === 'string') return;
+		this.options.colors[type] = {
+			hex: color,
+			ansi: hexToAnsi(color),
 		}
 	}
 
 	public setInfoColor(color: string) {
-		this.options.colors.str.info = color;
-		this.options.colors.ansi.info = hexToAnsi(color);
+		this.setColor('info', color);
 	}
 
 	public setSuccessColor(color: string) {
-		this.options.colors.str.success = color;
-		this.options.colors.ansi.success = hexToAnsi(color);
+		this.setColor('success', color);
 	}
 
 	public setWarningColor(color: string) {
-		this.options.colors.str.warning = color;
-		this.options.colors.ansi.warning = hexToAnsi(color);
+		this.setColor('warning', color);
 	}
 
 	public setErrorColor(color: string) {
-		this.options.colors.str.error = color;
-		this.options.colors.ansi.error = hexToAnsi(color);
+		this.setColor('error', color);
 	}
 
 	public setFatalColor(color: string) {
-		this.options.colors.str.fatal = color;
-		this.options.colors.ansi.fatal = hexToAnsi(color);
+		this.setColor('fatal', color);
 	}
 
 	public setDebugColor(color: string) {
-		this.options.colors.str.debug = color;
-		this.options.colors.ansi.debug = hexToAnsi(color);
+		this.setColor('debug', color);
 	}
 
 	// Strings

@@ -23,21 +23,18 @@ export class Logger extends OptionsManager {
 	}
 
 	private formatColors(message: string, level: LogLevel): string {
-		// replace all template hex values
-		message = message.replace(/!{hex:([0-9a-fA-F]{6})}/g, (_, hex) => {
-			return hexToAnsi(hex);
-		});
-
-		// then replace all color values
 		return message
-			.replaceAll('!{colors.level}', this.options.colors.ansi[LogLevel[level].toLowerCase() as LogType]!)
-			.replaceAll('!{colors.info}', this.options.colors.ansi.info!)
-			.replaceAll('!{colors.success}', this.options.colors.ansi.success!)
-			.replaceAll('!{colors.warning}', this.options.colors.ansi.warning!)
-			.replaceAll('!{colors.error}', this.options.colors.ansi.error!)
-			.replaceAll('!{colors.fatal}', this.options.colors.ansi.fatal!)
-			.replaceAll('!{colors.debug}', this.options.colors.ansi.debug!)
-			.replaceAll('!{colors.reset}', this.options.colors.ansi.reset);
+			.replaceAll(/!{hex:([0-9a-fA-F]{6})}/g, (_, hex) => {
+				return hexToAnsi(hex);
+			})
+			.replaceAll('!{colors.level}', this.options.colors[LogLevel[level].toLowerCase() as LogType].ansi!)
+			.replaceAll('!{colors.info}', this.options.colors.info.ansi!)
+			.replaceAll('!{colors.success}', this.options.colors.success.ansi!)
+			.replaceAll('!{colors.warning}', this.options.colors.warning.ansi!)
+			.replaceAll('!{colors.error}', this.options.colors.error.ansi!)
+			.replaceAll('!{colors.fatal}', this.options.colors.fatal.ansi!)
+			.replaceAll('!{colors.debug}', this.options.colors.debug.ansi!)
+			.replaceAll('!{colors.reset}', this.options.colors.reset);
 	}
 
 	private log(level: LogLevel, message: string, ...args: any[]) {
@@ -57,7 +54,7 @@ export class Logger extends OptionsManager {
 		let fmtdMessage = this.formatBase(this.options.formats.log, messageStr, level); // add date, log level & message
 		fmtdMessage = this.formatColors(fmtdMessage, level); // add colors
 
-		console.log(this.options.colors.ansi.reset + fmtdMessage);
+		console.log(this.options.colors.reset + fmtdMessage);
 	}
 
 	public info(message: string, ...args: any[]) {

@@ -9,9 +9,11 @@ export interface LoggerOptions {
 		date: string;
 		altDate: string;
 	},
-	colors: {
-		str: Record<LogType, string>;
-		ansi: Partial<Record<LogType, string>> & { reset: string; };
-	};
-	strings: Partial<Record<LogType, string>>;
+	colors: Record<string, Color> & { reset: string };
+	strings: Record<LogType, string>;
+}
+
+export interface Color {
+	hex: string,
+	ansi?: string,
 }
