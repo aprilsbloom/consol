@@ -5,10 +5,11 @@ export type Style = 'reset' | 'bold' | 'italic' | 'underline' | 'strikethrough';
 
 export interface LoggerOptions {
 	logLevel: LogLevel;
+	outputToFile: boolean;
 	formats: {
 		log: string;
 		date: string;
-		altDate: string;
+		path: string;
 	},
 	colors: Record<LogType, Color>;
 	styles: Record<Style, string>;

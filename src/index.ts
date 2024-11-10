@@ -1,8 +1,11 @@
 import strftime from 'strftime';
-import { OptionsManager } from './optionsManager';
+
+import { mkdirSync, writeFileSync } from 'node:fs';
+
 import { LogLevel } from './enums';
-import type { LoggerOptions, LogType, Style } from './types.d.ts';
-import { hexToAnsi } from './utils.ts';
+import { OptionsManager } from './optionsManager';
+import type { LogType, LoggerOptions, Style } from './types.d.ts';
+import { hexToAnsi } from './utils';
 
 export class Logger extends OptionsManager {
 	constructor(options: Partial<LoggerOptions> = {}) {
@@ -17,7 +20,6 @@ export class Logger extends OptionsManager {
 	private formatBase(format: string, message: string, level: LogLevel): string {
 		return format
 			.replaceAll('!{date}', this.fetchDate())
-			.replaceAll('!{altDate}', this.fetchDate(this.options.formats.altDate))
 			.replaceAll('!{level}', this.options.strings[LogLevel[level].toLowerCase() as LogType]!)
 			.replaceAll('!{message}', message);
 	}
@@ -34,28 +36,38 @@ export class Logger extends OptionsManager {
 			})
 			.replaceAll('!{colors.level}', this.options.colors[LogLevel[level].toLowerCase() as LogType].ansi!)
 			.replaceAll(/!{colors.([a-z]+)}/g, (full, color: LogType) => {
-				const code = this.options.colors[color].ansi;
+				const code = this.options.colors[color]?.ansi;
 				if (!code) return full;
 				return code
 			})
 	}
 
+	private writeToFile(message: string) {
+		const path = this.fetchDate(this.options.formats.path);
+		const dir = path.split('/').slice(0, -1).join('/');
+		mkdirSync(dir, { recursive: true });
+		writeFileSync(path, `${message}\n`, { flag: 'a' });
+	}
+
 	private log(level: LogLevel, message: string, ...args: any[]) {
 		if (level > this.options.logLevel) return;
 
-		const messageStr = (args.length ?
-			// biome-ignore lint/style/useTemplate: template literals make the code harder to read here lol
-		  message + " " + args.map(item => {
-				if (typeof item === 'string') return item;
-				if (typeof item === 'object') return JSON.stringify(item, null, 2);
-				if (item?.toString) return item.toString();
-				return item;
-			}).join(' ') :
-			message)
+		const messageStr = (
+			args.length ?
+				// biome-ignore lint/style/useTemplate: template literals make the code harder to read here lol
+				message + " " + args.map(item => {
+					if (typeof item === 'string') return item;
+					if (typeof item === 'object') return JSON.stringify(item, null, 2);
+					if (item?.toString) return item.toString();
+					return item;
+				}).join(' ') :
+				message
+			)
 			.replaceAll("!{", "!​{"); // zero-width space to prevent template literals in messages
 
-		let fmtdMessage = this.formatBase(this.options.formats.log, messageStr, level); // add date, log level & message
-		fmtdMessage = this.formatColors(fmtdMessage, level); // add colors
+		let fmtdMessage = this.formatBase(this.options.formats.log, messageStr, level);
+		if (this.options.outputToFile) this.writeToFile(fmtdMessage.replaceAll(/!{[^}]+}/g, ''));
+		fmtdMessage = this.formatColors(fmtdMessage, level);
 
 		console.log(this.options.styles.reset + fmtdMessage);
 	}
@@ -87,7 +99,8 @@ export class Logger extends OptionsManager {
 }
 
 const logger = new Logger();
-logger.info('!{hex:000000}meow mrrp meow');
+logger.setOutputToFile(true);
+logger.info('meow mrrp meow');
 logger.success('meow mrrp meow');
 logger.warning('meow mrrp meow');
 logger.debug('meow mrrp meow');

@@ -6,30 +6,19 @@ import type { LogType, LoggerOptions } from './types';
 export class OptionsManager {
 	protected options: LoggerOptions = {
 		logLevel: LogLevel.Fatal,
+		outputToFile: false,
 		formats: {
 			log: "!{date} !{colors.level}!{level}!{styles.reset} !{message}",
 			date: '%Y/%m/%d %H:%M:%S',
-			altDate: '%Y-%m-%d',
+			path: 'logs/%Y-%m-%d.log',
 		},
 		colors: {
-			info: {
-				hex: '#a8a8a8',
-			},
-			success: {
-				hex: '#79ef77',
-			},
-			warning: {
-				hex: '#efe777',
-			},
-			error: {
-				hex: '#ef8d77',
-			},
-			fatal: {
-				hex: '#ef8d77',
-			},
-			debug: {
-				hex: '#a8a8a8',
-			},
+			info: { hex: '#a8a8a8' },
+			success: { hex: '#79ef77' },
+			warning: { hex: '#efe777' },
+			error: { hex: '#ef8d77' },
+			fatal: { hex: '#ef8d77' },
+			debug: { hex: '#a8a8a8' },
 		},
 		styles: {
 			reset: '\x1b[0m',
@@ -75,8 +64,8 @@ export class OptionsManager {
 		this.options.formats.date = format;
 	}
 
-	public setAltDateFormat(format: string) {
-		this.options.formats.altDate = format;
+	public setOutputPathFormat(format: string) {
+		this.options.formats.path = format;
 	}
 
 	// Colors
@@ -147,5 +136,10 @@ export class OptionsManager {
 
 	public setDebugString(str: string) {
 		this.options.strings.debug = str;
+	}
+
+	// File output
+	public setOutputToFile(outputToFile: boolean) {
+		this.options.outputToFile = outputToFile;
 	}
 }
