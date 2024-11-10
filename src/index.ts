@@ -44,8 +44,11 @@ export class Logger extends OptionsManager {
 
 	private writeToFile(message: string) {
 		const path = this.fetchDate(this.options.formats.path);
-		const dir = path.split('/').slice(0, -1).join('/');
-		mkdirSync(dir, { recursive: true });
+		const dir = path.includes('/') ?
+			path.split('/').slice(0, -1).join('/'):
+			'';
+
+		if (dir) mkdirSync(dir, { recursive: true });
 		writeFileSync(path, `${message}\n`, { flag: 'a' });
 	}
 

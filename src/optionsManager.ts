@@ -46,9 +46,12 @@ export class OptionsManager {
 		if (this.options.colors) this.setColors(this.options.colors);
 	}
 
-	// Log level
 	public setLogLevel(level: LogLevel) {
 		this.options.logLevel = level;
+	}
+
+	public setOutputToFile(outputToFile: boolean) {
+		this.options.outputToFile = outputToFile;
 	}
 
 	// Formats
@@ -64,7 +67,7 @@ export class OptionsManager {
 		this.options.formats.date = format;
 	}
 
-	public setOutputPathFormat(format: string) {
+	public setPathFormat(format: string) {
 		this.options.formats.path = format;
 	}
 
@@ -79,9 +82,10 @@ export class OptionsManager {
 
 	private setColor(type: keyof LoggerOptions['colors'], color: string) {
 		if (!type || !color) return;
+		const ansi = hexToAnsi(color);
 		this.options.colors[type] = {
 			hex: color,
-			ansi: hexToAnsi(color),
+			ansi,
 		}
 	}
 
@@ -136,10 +140,5 @@ export class OptionsManager {
 
 	public setDebugString(str: string) {
 		this.options.strings.debug = str;
-	}
-
-	// File output
-	public setOutputToFile(outputToFile: boolean) {
-		this.options.outputToFile = outputToFile;
 	}
 }
