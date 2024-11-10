@@ -60,7 +60,16 @@ export class Logger extends OptionsManager {
 				// biome-ignore lint/style/useTemplate: template literals make the code harder to read here lol
 				message + " " + args.map(item => {
 					if (typeof item === 'string') return item;
-					if (typeof item === 'object') return JSON.stringify(item, null, this.options.jsonIndent);
+					if (typeof item === 'object') {
+						return JSON.stringify(
+							item,
+							(_, value) => {
+								if (typeof value === 'function') return value.toString();
+								return value;
+							},
+							this.options.jsonIndent
+						);
+					}
 					if (item?.toString) return item.toString();
 					return item;
 				}).join(' ') :
