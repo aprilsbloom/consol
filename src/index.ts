@@ -60,7 +60,7 @@ export class Logger extends OptionsManager {
 				// biome-ignore lint/style/useTemplate: template literals make the code harder to read here lol
 				message + " " + args.map(item => {
 					if (typeof item === 'string') return item;
-					if (typeof item === 'object') return JSON.stringify(item, null, 2);
+					if (typeof item === 'object') return JSON.stringify(item, null, this.options.jsonIndent);
 					if (item?.toString) return item.toString();
 					return item;
 				}).join(' ') :
@@ -102,7 +102,6 @@ export class Logger extends OptionsManager {
 }
 
 const logger = new Logger();
-logger.setOutputToFile(true);
 logger.info('meow mrrp meow');
 logger.success('meow mrrp meow');
 logger.warning('meow mrrp meow');

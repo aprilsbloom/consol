@@ -7,6 +7,7 @@ export class OptionsManager {
 	protected options: LoggerOptions = {
 		logLevel: LogLevel.Fatal,
 		outputToFile: false,
+		jsonIndent: 2,
 		formats: {
 			log: "!{date} !{colors.level}!{level}!{styles.reset} !{message}",
 			date: '%Y/%m/%d %H:%M:%S',
@@ -52,6 +53,10 @@ export class OptionsManager {
 
 	public setOutputToFile(outputToFile: boolean) {
 		this.options.outputToFile = outputToFile;
+	}
+
+	public setJsonIndent(indent: number) {
+		this.options.jsonIndent = indent;
 	}
 
 	// Formats

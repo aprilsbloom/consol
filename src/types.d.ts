@@ -6,6 +6,7 @@ export type Style = 'reset' | 'bold' | 'italic' | 'underline' | 'strikethrough';
 export interface LoggerOptions {
 	logLevel: LogLevel;
 	outputToFile: boolean;
+	jsonIndent: number;
 	formats: {
 		log: string;
 		date: string;
