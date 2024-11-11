@@ -10,6 +10,8 @@ const REGEX = {
 	DATE: /!{date:(.*?%[\s\S])}/g,
 	STYLES: /!{styles.([\s\S]+)}/g,
 	HEX: /!{hex:(b|f)g:([0-9a-fA-F]{3}|[0-9a-fA-F]{6})}/g,
+	REMOVE_TEMPLATES: /!{[^}]+}/g,
+	REMOVE_ANSI: /\x1b\[[^m]+m/g,
 }
 
 export class OptionsManager {
@@ -76,7 +78,13 @@ export class OptionsManager {
 			'';
 
 		if (dir) mkdirSync(dir, { recursive: true });
-		writeFileSync(path, `${message}\n`, { flag: 'a' });
+
+		// append to file
+		const msg = message
+			.replaceAll(REGEX.REMOVE_TEMPLATES, '') // remove template strings
+			.replaceAll(REGEX.REMOVE_ANSI, ''); // remove ansi codes
+
+		writeFileSync(path, `${msg}\n`, { flag: 'a' });
 	}
 
 	public setLogLevel(level: LogLevel) {
