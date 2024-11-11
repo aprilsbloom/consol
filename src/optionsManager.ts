@@ -1,26 +1,14 @@
 import { merge } from 'lodash';
 import { hexToAnsi } from './utils';
-import { LogLevel } from './enums';
-import type { LogType, LoggerOptions } from './types';
+import { LogLevel, logTypeToLogLevel } from './enums';
+import type { Format, LogType, LoggerOptions, Style } from './types';
+import strftime from 'strftime';
 
 export class OptionsManager {
 	protected options: LoggerOptions = {
 		logLevel: LogLevel.Fatal,
 		outputToFile: false,
 		jsonIndent: 2,
-		formats: {
-			log: "!{date} !{colors.level}!{level}!{styles.reset} !{message}",
-			date: '%Y/%m/%d %H:%M:%S',
-			path: 'logs/%Y-%m-%d.log',
-		},
-		colors: {
-			info: { hex: '#a8a8a8' },
-			success: { hex: '#79ef77' },
-			warning: { hex: '#efe777' },
-			error: { hex: '#ef8d77' },
-			fatal: { hex: '#ef8d77' },
-			debug: { hex: '#a8a8a8' },
-		},
 		styles: {
 			reset: '\x1b[0m',
 			bold: '\x1b[1m',
@@ -28,14 +16,19 @@ export class OptionsManager {
 			underline: '\x1b[4m',
 			strikethrough: '\x1b[9m',
 		},
-		strings: {
-			info: 'INFO',
-			success: 'SUCCESS',
-			warning: 'WARNING',
-			error: 'ERROR',
-			fatal: 'FATAL',
-			debug: 'DEBUG',
-		},
+		format: {
+			log: "!{date} !{level}!{styles.reset} !{message}",
+			date: '%Y/%m/%d %H:%M:%S',
+			path: 'logs/%Y-%m-%d.log',
+			level: {
+				info: { str: '!{hex:fg:a8a8a8}INFO' },
+				success: { str: '!{hex:fg:79ef77}SUCCESS' },
+				warning: { str: '!{hex:fg:efe777}WARNING' },
+				error: { str: '!{hex:fg:ef8d77}ERROR' },
+				fatal: { str: '!{hex:fg:ef8d77}FATAL' },
+				debug: { str: '!{hex:fg:a8a8a8}DEBUG' },
+			},
+		}
 	};
 
 	constructor(options: Partial<LoggerOptions> = {}) {
@@ -44,7 +37,30 @@ export class OptionsManager {
 
 	public setOptions(options: Partial<LoggerOptions>) {
 		this.options = merge(this.options, options);
-		if (this.options.colors) this.setColors(this.options.colors);
+		this.setLevelFormats(this.options.format.level);
+	}
+
+	protected fetchDate(format: string = '', date: Date = new Date()) {
+		if (!format) format = this.options.format.date;
+		return strftime(format, date);
+	}
+
+	protected formatColors(format: string, level: LogLevel): string {
+		return format
+			.replaceAll(/!{styles.([a-z]+)}/g, (full, style: Style) => {
+				const code = this.options.styles[style];
+				if (!code) return full;
+				return code;
+			})
+			.replaceAll(/!{hex:(b|f)g:([0-9a-fA-F]{3}|[0-9a-fA-F]{6})}/g, (_, type, hex) => {
+				return hexToAnsi(hex, type === 'b');
+			})
+			// .replaceAll('!{colors.level}', this.options.colors[LogLevel[level].toLowerCase() as LogType].ansi!)
+			// .replaceAll(/!{colors.([a-z]+)}/g, (full, color: LogType) => {
+			// 	const code = this.options.colors[color]?.ansi;
+			// 	if (!code) return full;
+			// 	return code
+			// })
 	}
 
 	public setLogLevel(level: LogLevel) {
@@ -59,91 +75,94 @@ export class OptionsManager {
 		this.options.jsonIndent = indent;
 	}
 
-	// Formats
-	public setFormats(formats: Partial<LoggerOptions['formats']>) {
-		this.options.formats = merge(this.options.formats, formats);
+	// Styles
+	public setStyles(styles: Partial<LoggerOptions['styles']>) {
+		this.options.styles = merge(this.options.styles, styles);
 	}
 
-	public setLogFormat(format: string) {
-		this.options.formats.log = format;
+	public setStyle(style: keyof LoggerOptions['styles'], value: string) {
+		this.options.styles[style] = value;
 	}
 
-	public setDateFormat(format: string) {
-		this.options.formats.date = format;
+	public setResetStyle(value: string) {
+		this.setStyle('reset', value);
 	}
 
-	public setPathFormat(format: string) {
-		this.options.formats.path = format;
+	public setBoldStyle(value: string) {
+		this.setStyle('bold', value);
 	}
 
-	// Colors
-	public setColors(colors: Partial<LoggerOptions['colors']>) {
-		this.options.colors = merge(this.options.colors, colors);
+	public setItalicStyle(value: string) {
+		this.setStyle('italic', value);
+	}
 
-		for (const key of Object.keys(this.options.colors) as LogType[]) {
-			this.setColor(key, this.options.colors[key]?.hex);
+	public setUnderlineStyle(value: string) {
+		this.setStyle('underline', value);
+	}
+
+	public setStrikethroughStyle(value: string) {
+		this.setStyle('strikethrough', value);
+	}
+
+	// Generic formats
+	public setFormats(formats: Partial<LoggerOptions['format']>) {
+		delete formats.level;
+		this.options.format = merge(this.options.format, formats);
+	}
+
+	public setFormat(format: Exclude<keyof LoggerOptions['format'], 'level'>, value: string) {
+		this.options.format[format] = value;
+	}
+
+	public setDateFormat(value: string) {
+		this.setFormat('date', value);
+	}
+
+	public setLogFormat(value: string) {
+		this.setFormat('log', value);
+	}
+
+	public setPathFormat(value: string) {
+		this.setFormat('path', value);
+	}
+
+	// Level formats
+	public setLevelFormats(levels: Partial<LoggerOptions['format']['level']>) {
+		this.options.format.level = merge(this.options.format.level, levels);
+		for (const [level, format] of Object.entries(levels) as [LogType, Format][]) {
+			this.setLevelFormat(level as LogType, format.str);
 		}
 	}
 
-	private setColor(type: keyof LoggerOptions['colors'], color: string) {
-		if (!type || !color) return;
-		const ansi = hexToAnsi(color);
-		this.options.colors[type] = {
-			hex: color,
-			ansi,
+	public setLevelFormat(level: LogType, value: string) {
+		const _level = logTypeToLogLevel(level);
+		this.options.format.level[level] = {
+			str: value,
+			ansi: this.formatColors(value, _level)
 		}
 	}
 
-	public setInfoColor(color: string) {
-		this.setColor('info', color);
+	public setInfoFormat(value: string) {
+		this.setLevelFormat('info', value);
 	}
 
-	public setSuccessColor(color: string) {
-		this.setColor('success', color);
+	public setSuccessFormat(value: string) {
+		this.setLevelFormat('success', value);
 	}
 
-	public setWarningColor(color: string) {
-		this.setColor('warning', color);
+	public setWarningFormat(value: string) {
+		this.setLevelFormat('warning', value);
 	}
 
-	public setErrorColor(color: string) {
-		this.setColor('error', color);
+	public setErrorFormat(value: string) {
+		this.setLevelFormat('error', value);
 	}
 
-	public setFatalColor(color: string) {
-		this.setColor('fatal', color);
+	public setFatalFormat(value: string) {
+		this.setLevelFormat('fatal', value);
 	}
 
-	public setDebugColor(color: string) {
-		this.setColor('debug', color);
-	}
-
-	// Strings
-	public setStrings(strings: Partial<LoggerOptions['strings']>) {
-		this.options.strings = merge(this.options.strings, strings);
-	}
-
-	public setInfoString(str: string) {
-		this.options.strings.info = str;
-	}
-
-	public setSuccessString(str: string) {
-		this.options.strings.success = str;
-	}
-
-	public setWarningString(str: string) {
-		this.options.strings.warning = str;
-	}
-
-	public setErrorString(str: string) {
-		this.options.strings.error = str;
-	}
-
-	public setFatalString(str: string) {
-		this.options.strings.fatal = str;
-	}
-
-	public setDebugString(str: string) {
-		this.options.strings.debug = str;
+	public setDebugFormat(value: string) {
+		this.setLevelFormat('debug', value);
 	}
 }

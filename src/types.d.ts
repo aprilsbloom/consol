@@ -7,17 +7,16 @@ export interface LoggerOptions {
 	logLevel: LogLevel;
 	outputToFile: boolean;
 	jsonIndent: number;
-	formats: {
+	styles: Record<Style, string>;
+	format: {
 		log: string;
 		date: string;
 		path: string;
-	},
-	colors: Record<LogType, Color>;
-	styles: Record<Style, string>;
-	strings: Record<LogType, string>;
+		level: Record<LogType, Format>;
+	}
 }
 
-export interface Color {
-	hex: string,
-	ansi?: string,
+export interface Format {
+	str: string;
+	ansi?: string;
 }

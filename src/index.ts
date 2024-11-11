@@ -1,49 +1,24 @@
-import strftime from 'strftime';
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 
 import { LogLevel } from './enums';
 import { OptionsManager } from './optionsManager';
-import type { LogType, LoggerOptions, Style } from './types.d.ts';
-import { hexToAnsi } from './utils';
+import type { LoggerOptions, LogType } from './types.d.ts';
 
 export class Logger extends OptionsManager {
 	constructor(options: Partial<LoggerOptions> = {}) {
 		super(options);
 	}
 
-	private fetchDate(format: string = '', date: Date = new Date()) {
-		if (!format) format = this.options.formats.date;
-		return strftime(format, date);
-	}
-
 	private formatBase(format: string, message: string, level: LogLevel): string {
 		return format
 			.replaceAll('!{date}', this.fetchDate())
-			.replaceAll('!{level}', this.options.strings[LogLevel[level].toLowerCase() as LogType]!)
+			.replaceAll('!{level}', this.options.format.level[LogLevel[level].toLowerCase() as LogType].ansi!)
 			.replaceAll('!{message}', message);
 	}
 
-	private formatColors(message: string, level: LogLevel): string {
-		return message
-			.replaceAll(/!{styles.([a-z]+)}/g, (full, style: Style) => {
-				const code = this.options.styles[style];
-				if (!code) return full;
-				return code;
-			})
-			.replaceAll(/!{hex:(b|f)g:([0-9a-fA-F]{3}|[0-9a-fA-F]{6})}/g, (_, type, hex) => {
-				return hexToAnsi(hex, type === 'b');
-			})
-			.replaceAll('!{colors.level}', this.options.colors[LogLevel[level].toLowerCase() as LogType].ansi!)
-			.replaceAll(/!{colors.([a-z]+)}/g, (full, color: LogType) => {
-				const code = this.options.colors[color]?.ansi;
-				if (!code) return full;
-				return code
-			})
-	}
-
 	private writeToFile(message: string) {
-		const path = this.fetchDate(this.options.formats.path);
+		const path = this.fetchDate(this.options.format.path);
 		const dir = path.includes('/') ?
 			path.split('/').slice(0, -1).join('/'):
 			'';
@@ -75,9 +50,9 @@ export class Logger extends OptionsManager {
 				}).join(' ') :
 				message
 			)
-			.replaceAll("!{", "!​{"); // zero-width space to prevent template literals in messages
+			// .replaceAll("!{", "!​{"); // zero-width space to prevent template literals in messages
 
-		let fmtdMessage = this.formatBase(this.options.formats.log, messageStr, level);
+		let fmtdMessage = this.formatBase(this.options.format.log, messageStr, level);
 		if (this.options.outputToFile) this.writeToFile(fmtdMessage.replaceAll(/!{[^}]+}/g, ''));
 		fmtdMessage = this.formatColors(fmtdMessage, level);
 

@@ -1,3 +1,5 @@
+import type { LogType } from "./types";
+
 export enum LogLevel {
 	Info,
 	Success,
@@ -5,4 +7,15 @@ export enum LogLevel {
 	Error,
 	Fatal,
 	Debug,
+}
+
+export function logTypeToLogLevel(type: LogType): LogLevel {
+	switch (type) {
+		case 'info': return LogLevel.Info;
+		case 'success': return LogLevel.Success;
+		case 'warning': return LogLevel.Warning;
+		case 'error': return LogLevel.Error;
+		case 'fatal': return LogLevel.Fatal;
+		case 'debug': return LogLevel.Debug;
+	}
 }

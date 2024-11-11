@@ -14,6 +14,9 @@
 			},
 			"suspicious": {
 				"noExplicitAny": "off"
+			},
+			"performance": {
+				"noDelete": "off"
 			}
 		}
 	}
