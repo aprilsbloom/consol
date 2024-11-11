@@ -55,7 +55,8 @@ export class OptionsManager {
 		return format
 			.replaceAll(REGEX.DATE, (_, date) => strftime(date))
 			.replaceAll('!{level}', this.options.format.level[LogLevel[level].toLowerCase() as LogType].ansi!)
-			.replaceAll('!{message}', message);
+			.replaceAll('!{message}', message)
+			.trim();
 	}
 
 	protected formatColors(format: string, level: LogLevel): string {
@@ -68,6 +69,7 @@ export class OptionsManager {
 			.replaceAll(REGEX.HEX, (_, type, hex) => {
 				return hexToAnsi(hex, type === 'b');
 			})
+			.trim();
 	}
 
 	protected writeToFile(message: string) {

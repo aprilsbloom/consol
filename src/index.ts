@@ -36,7 +36,6 @@ export class Logger extends OptionsManager {
 
 		let fmtdMessage = this.formatBase(this.options.format.log, messageStr, level);
 		if (this.options.outputToFile) this.writeToFile(fmtdMessage);
-
 		fmtdMessage = this.formatColors(fmtdMessage, level);
 
 		console.log(this.options.styles.reset + fmtdMessage);
