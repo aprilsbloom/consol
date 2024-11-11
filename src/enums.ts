@@ -1,6 +1,7 @@
 import type { LogType } from "./types";
 
 export enum LogLevel {
+	Log,
 	Info,
 	Success,
 	Warning,
@@ -11,6 +12,7 @@ export enum LogLevel {
 
 export function logTypeToLogLevel(type: LogType): LogLevel {
 	switch (type) {
+		case 'log': return LogLevel.Log;
 		case 'info': return LogLevel.Info;
 		case 'success': return LogLevel.Success;
 		case 'warning': return LogLevel.Warning;

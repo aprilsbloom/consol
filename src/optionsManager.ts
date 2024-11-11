@@ -23,6 +23,7 @@ export class OptionsManager {
 			date: '%Y/%m/%d %H:%M:%S',
 			path: 'logs/%Y-%m-%d.log',
 			level: {
+				log: { str: '!{hex:fg:a8a8a8}LOG' },
 				info: { str: '!{hex:fg:a8a8a8}INFO' },
 				success: { str: '!{hex:fg:79ef77}SUCCESS' },
 				warning: { str: '!{hex:fg:efe777}WARNING' },

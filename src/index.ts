@@ -41,6 +41,10 @@ export class Logger extends OptionsManager {
 		console.log(this.options.styles.reset + fmtdMessage);
 	}
 
+	public log(message: string, ...args: any[]) {
+		this._log(LogLevel.Log, message, ...args);
+	}
+
 	public info(message: string, ...args: any[]) {
 		this._log(LogLevel.Info, message, ...args);
 	}
