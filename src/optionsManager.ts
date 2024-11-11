@@ -1,8 +1,10 @@
 import { merge } from 'lodash';
-import { hexToAnsi } from './utils';
-import { LogLevel, logTypeToLogLevel } from './enums';
-import type { Format, LogType, LoggerOptions, Style } from './types';
 import strftime from 'strftime';
+import { mkdirSync, writeFileSync } from 'node:fs';
+
+import { LogLevel, logTypeToLogLevel } from './enums';
+import { hexToAnsi } from './utils';
+import type { Format, LogType, LoggerOptions, Style } from './types';
 
 export class OptionsManager {
 	protected options: LoggerOptions = {
@@ -40,6 +42,13 @@ export class OptionsManager {
 		this.setLevelFormats(this.options.format.level);
 	}
 
+	protected formatBase(format: string, message: string, level: LogLevel): string {
+		return format
+			.replaceAll('!{date}', this.fetchDate())
+			.replaceAll('!{level}', this.options.format.level[LogLevel[level].toLowerCase() as LogType].ansi!)
+			.replaceAll('!{message}', message);
+	}
+
 	protected fetchDate(format: string = '', date: Date = new Date()) {
 		if (!format) format = this.options.format.date;
 		return strftime(format, date);
@@ -61,6 +70,16 @@ export class OptionsManager {
 			// 	if (!code) return full;
 			// 	return code
 			// })
+	}
+
+	protected writeToFile(message: string) {
+		const path = this.fetchDate(this.options.format.path);
+		const dir = path.includes('/') ?
+			path.split('/').slice(0, -1).join('/'):
+			'';
+
+		if (dir) mkdirSync(dir, { recursive: true });
+		writeFileSync(path, `${message}\n`, { flag: 'a' });
 	}
 
 	public setLogLevel(level: LogLevel) {
