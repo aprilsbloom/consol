@@ -1,6 +1,6 @@
 import type { LogLevel } from "./enums";
 
-export type LogType = 'log' | 'info' | 'success' | 'warning' | 'error' | 'fatal' | 'debug';
+export type LogType = keyof typeof LogLevel extends infer T ? Lowercase<T & string> : never;
 export type Style = 'reset' | 'bold' | 'italic' | 'underline' | 'strikethrough';
 
 export interface LoggerOptions {
