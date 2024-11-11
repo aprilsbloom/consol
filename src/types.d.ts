@@ -10,7 +10,6 @@ export interface LoggerOptions {
 	styles: Record<Style, string>;
 	format: {
 		log: string;
-		date: string;
 		path: string;
 		level: Record<LogType, Format>;
 	}

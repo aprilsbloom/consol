@@ -6,6 +6,12 @@ import { LogLevel, logTypeToLogLevel } from './enums';
 import { hexToAnsi } from './utils';
 import type { Format, LogType, LoggerOptions, Style } from './types';
 
+const REGEX = {
+	DATE: /!{date:((.*?)%[\s\S])}/g,
+	STYLES: /!{styles.([a-z]+)}/g,
+	HEX: /!{hex:(b|f)g:([0-9a-fA-F]{3}|[0-9a-fA-F]{6})}/g,
+}
+
 export class OptionsManager {
 	protected options: LoggerOptions = {
 		logLevel: LogLevel.Fatal,
@@ -19,9 +25,8 @@ export class OptionsManager {
 			strikethrough: '\x1b[9m',
 		},
 		format: {
-			log: "!{date} !{level}!{styles.reset} !{message}",
-			date: '%Y/%m/%d %H:%M:%S',
-			path: 'logs/%Y-%m-%d.log',
+			log: "!{date:%Y/%m/%d %H:%M:%S} !{level}!{styles.reset} !{message}",
+			path: 'logs/!{date:%Y-%m-%d}.log',
 			level: {
 				log: { str: '!{hex:fg:a8a8a8}LOG' },
 				info: { str: '!{hex:fg:a8a8a8}INFO' },
@@ -46,36 +51,26 @@ export class OptionsManager {
 
 	protected formatBase(format: string, message: string, level: LogLevel): string {
 		return format
-			.replaceAll('!{date}', this.fetchDate())
+			.replaceAll(REGEX.DATE, (_, date) => strftime(date))
 			.replaceAll('!{level}', this.options.format.level[LogLevel[level].toLowerCase() as LogType].ansi!)
 			.replaceAll('!{message}', message);
 	}
 
-	protected fetchDate(format: string = '', date: Date = new Date()) {
-		if (!format) format = this.options.format.date;
-		return strftime(format, date);
-	}
-
 	protected formatColors(format: string, level: LogLevel): string {
 		return format
-			.replaceAll(/!{styles.([a-z]+)}/g, (full, style: Style) => {
+			.replaceAll(REGEX.STYLES, (full, style: Style) => {
 				const code = this.options.styles[style];
 				if (!code) return full;
 				return code;
 			})
-			.replaceAll(/!{hex:(b|f)g:([0-9a-fA-F]{3}|[0-9a-fA-F]{6})}/g, (_, type, hex) => {
+			.replaceAll(REGEX.HEX, (_, type, hex) => {
 				return hexToAnsi(hex, type === 'b');
 			})
-			// .replaceAll('!{colors.level}', this.options.colors[LogLevel[level].toLowerCase() as LogType].ansi!)
-			// .replaceAll(/!{colors.([a-z]+)}/g, (full, color: LogType) => {
-			// 	const code = this.options.colors[color]?.ansi;
-			// 	if (!code) return full;
-			// 	return code
-			// })
 	}
 
 	protected writeToFile(message: string) {
-		const path = this.fetchDate(this.options.format.path);
+		const path = this.options.format.path.replaceAll(REGEX.DATE, (_, date) => strftime(date));
+
 		const dir = path.includes('/') ?
 			path.split('/').slice(0, -1).join('/'):
 			'';
@@ -104,10 +99,6 @@ export class OptionsManager {
 
 	public setFormat(format: Exclude<keyof LoggerOptions['format'], 'level'>, value: string) {
 		this.options.format[format] = value;
-	}
-
-	public setDateFormat(value: string) {
-		this.setFormat('date', value);
 	}
 
 	public setLogFormat(value: string) {
