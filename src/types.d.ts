@@ -4,6 +4,7 @@ export type LogType = keyof typeof LogLevel extends infer T ? Lowercase<T & stri
 export type Style = 'reset' | 'bold' | 'italic' | 'underline' | 'strikethrough';
 
 export interface LoggerOptions {
+	enabled: boolean;
 	logLevel: LogLevel;
 	outputToFile: boolean;
 	jsonIndent: number;

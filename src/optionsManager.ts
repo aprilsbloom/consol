@@ -16,6 +16,7 @@ const REGEX = {
 
 export class OptionsManager {
 	protected options: LoggerOptions = {
+		enabled: true,
 		logLevel: LogLevel.Fatal,
 		outputToFile: false,
 		jsonIndent: 2,
@@ -59,7 +60,7 @@ export class OptionsManager {
 			.trim();
 	}
 
-	protected formatColors(format: string, level: LogLevel): string {
+	protected formatColors(format: string): string {
 		return format
 			.replaceAll(REGEX.STYLES, (full, style: Style) => {
 				const code = this.options.styles[style];
@@ -87,6 +88,14 @@ export class OptionsManager {
 			.replaceAll(REGEX.REMOVE_ANSI, ''); // remove ansi codes
 
 		writeFileSync(path, `${msg}\n`, { flag: 'a' });
+	}
+
+	public enableLogging() {
+		this.options.enabled = true;
+	}
+
+	public disableLogging() {
+		this.options.enabled = false;
 	}
 
 	public setLogLevel(level: LogLevel) {
@@ -128,10 +137,9 @@ export class OptionsManager {
 	}
 
 	public setLevelFormat(level: LogType, value: string) {
-		const _level = logTypeToLogLevel(level);
 		this.options.format.level[level] = {
 			str: value,
-			ansi: this.formatColors(value, _level)
+			ansi: this.formatColors(value)
 		}
 	}
 

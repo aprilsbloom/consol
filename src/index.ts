@@ -10,6 +10,7 @@ export class Logger extends OptionsManager {
 	}
 
 	private _log(level: LogLevel, message: string, ...args: any[]) {
+		if (!this.options.enabled) return;
 		if (level > this.options.logLevel) return;
 
 		const messageStr = (
@@ -36,7 +37,7 @@ export class Logger extends OptionsManager {
 
 		let fmtdMessage = this.formatBase(this.options.format.log, messageStr, level);
 		if (this.options.outputToFile) this.writeToFile(fmtdMessage);
-		fmtdMessage = this.formatColors(fmtdMessage, level);
+		fmtdMessage = this.formatColors(fmtdMessage);
 
 		console.log(this.options.styles.reset + fmtdMessage);
 	}
