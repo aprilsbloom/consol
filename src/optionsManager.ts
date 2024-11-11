@@ -52,6 +52,7 @@ export class OptionsManager {
 		this.setLevelFormats(this.options.format.level);
 	}
 
+	// these functions fucking suck i need to find a better way of doing this
 	protected formatBase(format: string, message: string, level: LogLevel): string {
 		return format
 			.replaceAll(REGEX.DATE, (_, date) => strftime(date))

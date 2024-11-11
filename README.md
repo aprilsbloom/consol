@@ -5,18 +5,20 @@
 a customizable logging framework written in typescript
 
 
-## formats
-by default, consol supports full customization of the logged output. it allows you to change the position and ordering of everything shown to the end user, through the process of placeholder strings and functions as shown below.
+## output
+by default, consol supports full customization of everything, mainly through the process of placeholder strings and functions as shown below.
 
 consol currently allows you to change the format of all logs, the path to each log, as well as the strings associated with each log level (see: [placeholders](#placeholders)). these can be modified using the following functions:
 - `setLogFormat()`
 - `setPathFormat()`
+  - consol supports writing logs to files. this can be enabled by calling `setOutputToFile()`
 - `setInfoFormat()`
 - `setSuccessFormat()`
 - `setWarningFormat()`
 - `setErrorFormat()`
 - `setFatalFormat()`
 - `setDebugFormat()`
+
 
 
 ### placeholders
@@ -44,3 +46,12 @@ consol currently supports the following:
   - currently, consol supports the following styles:
     - `reset`, `bold`, `italic`, `underline` and `strikethrough`
   - these are just shorthand for the raw ansi values
+
+### misc
+here are a few misc customization options consol also offers:
+- `enableLogging()` / `disableLogging()`
+  - outright stop logging anything to the console
+- `setLogLevel()`
+  - by default, this is set to `LogLevel.Fatal`, meaning it omits any debug logs.
+- `setJsonIndent()`
+  - this allows you to change the indentation levels of any stringified objects being logged
