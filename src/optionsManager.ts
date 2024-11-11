@@ -39,6 +39,7 @@ export class OptionsManager {
 	}
 
 	public setOptions(options: Partial<LoggerOptions>) {
+		if (options.styles) delete options.styles;
 		this.options = merge(this.options, options);
 		this.setLevelFormats(this.options.format.level);
 	}
@@ -95,35 +96,6 @@ export class OptionsManager {
 		this.options.jsonIndent = indent;
 	}
 
-	// Styles
-	public setStyles(styles: Partial<LoggerOptions['styles']>) {
-		this.options.styles = merge(this.options.styles, styles);
-	}
-
-	public setStyle(style: keyof LoggerOptions['styles'], value: string) {
-		this.options.styles[style] = value;
-	}
-
-	public setResetStyle(value: string) {
-		this.setStyle('reset', value);
-	}
-
-	public setBoldStyle(value: string) {
-		this.setStyle('bold', value);
-	}
-
-	public setItalicStyle(value: string) {
-		this.setStyle('italic', value);
-	}
-
-	public setUnderlineStyle(value: string) {
-		this.setStyle('underline', value);
-	}
-
-	public setStrikethroughStyle(value: string) {
-		this.setStyle('strikethrough', value);
-	}
-
 	// Generic formats
 	public setFormats(formats: Partial<LoggerOptions['format']>) {
 		delete formats.level;
@@ -150,7 +122,7 @@ export class OptionsManager {
 	public setLevelFormats(levels: Partial<LoggerOptions['format']['level']>) {
 		this.options.format.level = merge(this.options.format.level, levels);
 		for (const [level, format] of Object.entries(levels) as [LogType, Format][]) {
-			this.setLevelFormat(level as LogType, format.str);
+			this.setLevelFormat(level, format.str);
 		}
 	}
 

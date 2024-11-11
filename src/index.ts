@@ -35,7 +35,13 @@ export class Logger extends OptionsManager {
 			// .replaceAll("!{", "!​{"); // zero-width space to prevent template literals in messages
 
 		let fmtdMessage = this.formatBase(this.options.format.log, messageStr, level);
-		if (this.options.outputToFile) this.writeToFile(fmtdMessage.replaceAll(/!{[^}]+}/g, ''));
+		if (this.options.outputToFile) {
+			const newMsg = fmtdMessage
+				.replaceAll(/!{[^}]+}/g, '')
+				.replaceAll(/\x1b\[[^m]+m/g, '');
+
+			this.writeToFile(newMsg);
+		}
 		fmtdMessage = this.formatColors(fmtdMessage, level);
 
 		console.log(this.options.styles.reset + fmtdMessage);
@@ -72,6 +78,7 @@ export class Logger extends OptionsManager {
 }
 
 const logger = new Logger();
+logger.setOutputToFile(true);
 logger.info('meow mrrp meow');
 logger.success('meow mrrp meow');
 logger.warning('meow mrrp meow');
