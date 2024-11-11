@@ -7,8 +7,8 @@ import { hexToAnsi } from './utils';
 import type { Format, LogType, LoggerOptions, Style } from './types';
 
 const REGEX = {
-	DATE: /!{date:((.*?)%[\s\S])}/g,
-	STYLES: /!{styles.([a-z]+)}/g,
+	DATE: /!{date:(.*?%[\s\S])}/g,
+	STYLES: /!{styles.([\s\S]+)}/g,
 	HEX: /!{hex:(b|f)g:([0-9a-fA-F]{3}|[0-9a-fA-F]{6})}/g,
 }
 
