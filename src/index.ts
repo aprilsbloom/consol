@@ -10,3 +10,10 @@ export class Consol {
 }
 
 export const consol = new Consol();
+
+// consol.info('meow mrrp meow');
+// consol.success('meow mrrp meow');
+// consol.warning('meow mrrp meow');
+// consol.debug('meow mrrp meow');
+// consol.error('meow mrrp meow');
+// consol.fatal('meow mrrp meow');

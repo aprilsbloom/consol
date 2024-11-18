@@ -2,6 +2,7 @@ import { merge } from "lodash";
 import { LogLevel } from "./enums";
 import type { LoggerOptions } from "./types";
 
+
 export class OptionsManager {
 	private options: LoggerOptions = {
 		enabled: true,
@@ -36,12 +37,43 @@ export class OptionsManager {
 		this.set(options);
 	}
 
-	public set(options: Partial<LoggerOptions>) {
-		this.options = merge(this.options, options);
+	public set(options: Partial<LoggerOptions> | string, value?: any): void {
+		if (typeof options === 'object') {
+			this.options = merge(this.options, options);
+			return;
+		}
+
+		if (typeof value === 'undefined' || value === null) {
+			throw new Error('Value must be provided when setting a string key');
+		}
+
+		const keys = options.split('.');
+		let result: any = this.options;
+		for (let i = 0; i < keys.length - 1; i++) {
+			if (!result[keys[i]] || typeof result[keys[i]] !== 'object') {
+				result[keys[i]] = {};
+			}
+			result = result[keys[i]];
+		}
+
+		result[keys[keys.length - 1]] = value;
 	}
 
-	public get(): LoggerOptions {
-		return this.options;
+	public get(val: string = ''): LoggerOptions | any {
+		val = val.trim();
+		if (!val) return this.options;
+
+		const keys = val.split('.');
+		if (keys.length === 1) return (this.options as any)[val];
+
+		let result = this.options;
+
+		for (const k of keys) {
+			if (!result || typeof result !== 'object') return undefined;
+			result = (result as any)[k];
+		}
+
+		return result;
 	}
 
 	// Base
