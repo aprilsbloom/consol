@@ -3,9 +3,11 @@
 	"module": "src/index.ts",
 	"type": "module",
 	"scripts": {
-		"start": "bun src/index.ts"
+		"start": "bun src/index.ts",
+		"build": "rslib build"
 	},
 	"devDependencies": {
+		"@rslib/core": "^0.0.18",
 		"@types/bun": "latest",
 		"@types/lodash": "^4.17.13",
 		"@types/strftime": "^0.9.8",
