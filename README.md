@@ -40,8 +40,7 @@ consol currently supports the following:
   - `strftime` can be replaced with any supported [strftime](https://github.com/samsonjs/strftime?tab=readme-ov-file#supported-specifiers) specifiers, as well as any additional text
 - `!{hex:bg/fg:color}`
   - `color` can be either a shorthand hex value (3 characters long) or the full 6 characters long.
-  - in its current state, you must omit the #, which normally denotes a hex value in css
-  - `bg/fg` must be one or the other, they represent background and foreground colors
+  - `bg/fg` must be one or the other, they represent background and foreground colors respectively
 - `!{styles:style}`
   - currently, consol supports the following styles:
     - `reset`, `bold`, `italic`, `underline` and `strikethrough`

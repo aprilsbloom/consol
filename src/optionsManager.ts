@@ -1,25 +1,14 @@
-import { merge } from 'lodash';
-import strftime from 'strftime';
-import { mkdirSync, writeFileSync } from 'node:fs';
-
-import { LogLevel, logTypeToLogLevel } from './enums';
-import { hexToAnsi } from './utils';
-import type { Format, LogType, LoggerOptions, Style } from './types';
-
-const REGEX = {
-	DATE: /!{date:(.*?%[\s\S])}/g,
-	STYLES: /!{styles.([\s\S]+)}/g,
-	HEX: /!{hex:(b|f)g:([0-9a-fA-F]{3}|[0-9a-fA-F]{6})}/g,
-	REMOVE_TEMPLATES: /!{[^}]+}/g,
-	REMOVE_ANSI: /\x1b\[[^m]+m/g,
-}
+import { merge } from "lodash";
+import { LogLevel } from "./enums";
+import type { LoggerOptions } from "./types";
 
 export class OptionsManager {
-	protected options: LoggerOptions = {
+	private options: LoggerOptions = {
 		enabled: true,
 		logLevel: LogLevel.Fatal,
 		outputToFile: false,
 		jsonIndent: 2,
+
 		styles: {
 			reset: '\x1b[0m',
 			bold: '\x1b[1m',
@@ -27,94 +16,79 @@ export class OptionsManager {
 			underline: '\x1b[4m',
 			strikethrough: '\x1b[9m',
 		},
+
 		format: {
 			log: "!{date:%Y/%m/%d %H:%M:%S} !{level}!{styles.reset} !{message}",
 			path: 'logs/!{date:%Y-%m-%d}.log',
 			level: {
-				log: { str: '!{hex:fg:a8a8a8}LOG' },
-				info: { str: '!{hex:fg:a8a8a8}INFO' },
-				success: { str: '!{hex:fg:79ef77}SUCCESS' },
-				warning: { str: '!{hex:fg:efe777}WARNING' },
-				error: { str: '!{hex:fg:ef8d77}ERROR' },
-				fatal: { str: '!{hex:fg:ef8d77}FATAL' },
-				debug: { str: '!{hex:fg:a8a8a8}DEBUG' },
+				log: { str: '!{hex:fg:#a8a8a8}LOG' },
+				info: { str: '!{hex:fg:#a8a8a8}INFO' },
+				success: { str: '!{hex:fg:#79ef77}SUCCESS' },
+				warning: { str: '!{hex:fg:#efe777}WARNING' },
+				error: { str: '!{hex:fg:#ef8d77}ERROR' },
+				fatal: { str: '!{hex:fg:#ef8d77}FATAL' },
+				debug: { str: '!{hex:fg:#a8a8a8}DEBUG' },
 			},
 		}
 	};
 
 	constructor(options: Partial<LoggerOptions> = {}) {
-		this.setOptions(options);
+		this.set(options);
 	}
 
-	public setOptions(options: Partial<LoggerOptions>) {
-		if (options.styles) delete options.styles;
+	public set(options: Partial<LoggerOptions>) {
 		this.options = merge(this.options, options);
-		this.setLevelFormats(this.options.format.level);
 	}
 
-	// these functions fucking suck i need to find a better way of doing this
-	protected formatBase(format: string, message: string, level: LogLevel): string {
-		return format
-			.replaceAll(REGEX.DATE, (_, date) => strftime(date))
-			.replaceAll('!{level}', this.options.format.level[LogLevel[level].toLowerCase() as LogType].ansi!)
-			.replaceAll('!{message}', message)
-			.trim();
+	public get(): LoggerOptions {
+		return this.options;
 	}
 
-	protected formatColors(format: string): string {
-		return format
-			.replaceAll(REGEX.STYLES, (full, style: Style) => {
-				const code = this.options.styles[style];
-				if (!code) return full;
-				return code;
-			})
-			.replaceAll(REGEX.HEX, (_, type, hex) => {
-				return hexToAnsi(hex, type === 'b');
-			})
-			.trim();
-	}
-
-	protected writeToFile(message: string) {
-		const path = this.options.format.path.replaceAll(REGEX.DATE, (_, date) => strftime(date));
-
-		const dir = path.includes('/') ?
-			path.split('/').slice(0, -1).join('/'):
-			'';
-
-		if (dir) mkdirSync(dir, { recursive: true });
-
-		// append to file
-		const msg = message
-			.replaceAll(REGEX.REMOVE_TEMPLATES, '') // remove template strings
-			.replaceAll(REGEX.REMOVE_ANSI, ''); // remove ansi codes
-
-		writeFileSync(path, `${msg}\n`, { flag: 'a' });
-	}
-
-	public enableLogging() {
+	// Base
+	public enableLogging(): void {
 		this.options.enabled = true;
 	}
 
-	public disableLogging() {
+	public disableLogging(): void {
 		this.options.enabled = false;
 	}
 
-	public setLogLevel(level: LogLevel) {
+	public shouldLog(): boolean {
+		return this.options.enabled;
+	}
+
+	public setLogLevel(level: LogLevel): void {
 		this.options.logLevel = level;
 	}
 
-	public setOutputToFile(outputToFile: boolean) {
+	public getLogLevel(): LogLevel {
+		return this.options.logLevel;
+	}
+
+	public setOutputToFile(outputToFile: boolean): void {
 		this.options.outputToFile = outputToFile;
 	}
 
-	public setJsonIndent(indent: number) {
+	public shouldOutputToFile(): boolean {
+		return this.options.outputToFile;
+	}
+
+	public setJsonIndent(indent: number): void {
 		this.options.jsonIndent = indent;
 	}
 
-	// Generic formats
+	public getJsonIndent(): number {
+		return this.options.jsonIndent;
+	}
+
+	// Base formats
 	public setFormats(formats: Partial<LoggerOptions['format']>) {
 		delete formats.level;
 		this.options.format = merge(this.options.format, formats);
+	}
+
+	public getFormats(): LoggerOptions['format'] {
+		return this.options.format;
 	}
 
 	public setFormat(format: Exclude<keyof LoggerOptions['format'], 'level'>, value: string) {
@@ -130,41 +104,41 @@ export class OptionsManager {
 	}
 
 	// Level formats
-	public setLevelFormats(levels: Partial<LoggerOptions['format']['level']>) {
-		this.options.format.level = merge(this.options.format.level, levels);
-		for (const [level, format] of Object.entries(levels) as [LogType, Format][]) {
-			this.setLevelFormat(level, format.str);
-		}
-	}
+	// public setLevelFormats(levels: Partial<LoggerOptions['format']['level']>) {
+	// 	this.options.format.level = merge(this.options.format.level, levels);
+	// 	for (const [level, format] of Object.entries(levels) as [LogType, Format][]) {
+	// 		this.setLevelFormat(level, format.str);
+	// 	}
+	// }
 
-	public setLevelFormat(level: LogType, value: string) {
-		this.options.format.level[level] = {
-			str: value,
-			ansi: this.formatColors(value)
-		}
-	}
+	// public setLevelFormat(level: LogType, value: string) {
+	// 	this.options.format.level[level] = {
+	// 		str: value,
+	// 		ansi: this.formatHexTemplate(this.formatStylesTemplate(value))
+	// 	}
+	// }
 
-	public setInfoFormat(value: string) {
-		this.setLevelFormat('info', value);
-	}
+	// public setInfoFormat(value: string) {
+	// 	this.setLevelFormat('info', value);
+	// }
 
-	public setSuccessFormat(value: string) {
-		this.setLevelFormat('success', value);
-	}
+	// public setSuccessFormat(value: string) {
+	// 	this.setLevelFormat('success', value);
+	// }
 
-	public setWarningFormat(value: string) {
-		this.setLevelFormat('warning', value);
-	}
+	// public setWarningFormat(value: string) {
+	// 	this.setLevelFormat('warning', value);
+	// }
 
-	public setErrorFormat(value: string) {
-		this.setLevelFormat('error', value);
-	}
+	// public setErrorFormat(value: string) {
+	// 	this.setLevelFormat('error', value);
+	// }
 
-	public setFatalFormat(value: string) {
-		this.setLevelFormat('fatal', value);
-	}
+	// public setFatalFormat(value: string) {
+	// 	this.setLevelFormat('fatal', value);
+	// }
 
-	public setDebugFormat(value: string) {
-		this.setLevelFormat('debug', value);
-	}
+	// public setDebugFormat(value: string) {
+	// 	this.setLevelFormat('debug', value);
+	// }
 }

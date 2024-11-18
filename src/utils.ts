@@ -10,3 +10,11 @@ export function hexToAnsi(hex: string, background: boolean = false): string {
 
 	return `\x1b[${background ? '48' : '38'};2;${r};${g};${b}m`;
 }
+
+export const REGEX = {
+	DATE: /!{date:(.*?%[\s\S])}/g,
+	STYLES: /!{styles.([\s\S]+)}/g,
+	HEX: /!{hex:(b|f)g:(#?[0-9a-fA-F]{3}|#?[0-9a-fA-F]{6})}/g,
+	REMOVE_TEMPLATES: /!{[^}]+}/g,
+	REMOVE_ANSI: /\x1b\[[^m]+m/g,
+}
