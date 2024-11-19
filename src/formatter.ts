@@ -2,7 +2,15 @@ import type { OptionsManager } from "./optionsManager";
 import strftime from "strftime";
 import { LogLevel } from "./enums";
 import type { LogType, Style } from "./types";
-import { REGEX, hexToAnsi } from "./utils";
+import { hexToAnsi } from "./utils";
+
+const REGEX = {
+	DATE: /!{date:(.*?%[\s\S])}/g,
+	STYLES: /!{styles.([\s\S]+)}/g,
+	HEX: /!{hex:(b|f)g:(#?[0-9a-fA-F]{3}|#?[0-9a-fA-F]{6})}/g,
+	REMOVE_TEMPLATES: /!{[^}]+}/g,
+	REMOVE_ANSI: /\x1b\[[^m]+m/g,
+}
 
 export class Formatter {
 	private options: OptionsManager;

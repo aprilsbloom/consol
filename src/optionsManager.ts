@@ -44,10 +44,12 @@ export class OptionsManager {
 	public setKey(key: string, value: any): void {
 		const keys = key.split('.');
 		let result: any = this.options;
+
 		for (let i = 0; i < keys.length - 1; i++) {
 			if (!result[keys[i]] || typeof result[keys[i]] !== 'object') {
 				result[keys[i]] = {};
 			}
+
 			result = result[keys[i]];
 		}
 
@@ -58,12 +60,11 @@ export class OptionsManager {
 		return this.options;
 	}
 
-	public getKey(key: string) {
+	public getKey(key: string): any {
 		const keys = key.split('.');
 		if (keys.length === 1) return (this.options as any)[key];
 
 		let result = this.options;
-
 		for (const k of keys) {
 			if (!result || typeof result !== 'object') return undefined;
 			result = (result as any)[k];
@@ -81,16 +82,20 @@ export class OptionsManager {
 		this.options.enabled = false;
 	}
 
-	public shouldLog(): boolean {
-		return this.options.enabled;
-	}
-
 	public setLogLevel(level: LogLevel): void {
 		this.options.logLevel = level;
 	}
 
 	public getLogLevel(): LogLevel {
 		return this.options.logLevel;
+	}
+
+	public shouldLog(level?: LogLevel): boolean {
+		if (level !== undefined) {
+			return this.options.enabled && level <= this.options.logLevel;
+		}
+
+		return this.options.enabled;
 	}
 
 	public setOutputToFile(outputToFile: boolean): void {
@@ -111,7 +116,6 @@ export class OptionsManager {
 
 	// Base formats
 	public setFormats(formats: Partial<LoggerOptions['format']>) {
-		delete formats.level;
 		this.options.format = merge(this.options.format, formats);
 	}
 
