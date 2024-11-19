@@ -37,17 +37,12 @@ export class OptionsManager {
 		this.set(options);
 	}
 
-	public set(options: Partial<LoggerOptions> | string, value?: any): void {
-		if (typeof options === 'object') {
-			this.options = merge(this.options, options);
-			return;
-		}
+	public set(options: Partial<LoggerOptions>): void {
+		this.options = merge(this.options, options);
+	}
 
-		if (typeof value === 'undefined' || value === null) {
-			throw new Error('Value must be provided when setting a string key');
-		}
-
-		const keys = options.split('.');
+	public setKey(key: string, value: any): void {
+		const keys = key.split('.');
 		let result: any = this.options;
 		for (let i = 0; i < keys.length - 1; i++) {
 			if (!result[keys[i]] || typeof result[keys[i]] !== 'object') {
@@ -59,12 +54,13 @@ export class OptionsManager {
 		result[keys[keys.length - 1]] = value;
 	}
 
-	public get(val: string = ''): LoggerOptions | any {
-		val = val.trim();
-		if (!val) return this.options;
+	public get(): LoggerOptions {
+		return this.options;
+	}
 
-		const keys = val.split('.');
-		if (keys.length === 1) return (this.options as any)[val];
+	public getKey(key: string) {
+		const keys = key.split('.');
+		if (keys.length === 1) return (this.options as any)[key];
 
 		let result = this.options;
 
