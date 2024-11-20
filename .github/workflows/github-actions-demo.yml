@@ -1,0 +1,8 @@
+name: Testing actions
+run-name: Testing actions name🚀
+on: [push]
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "meow"

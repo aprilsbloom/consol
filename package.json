@@ -1,5 +1,21 @@
 {
-	"name": "consol",
+	"name": "consol.js",
+	"author": "aprilsbloom",
+	"version": "1.0.0",
+  "description": "a customizable logging framework written in typescript",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/aprilsbloom/consol"
+	},
+	"keywords": [
+		"console",
+		"terminal",
+		"logging",
+		"customizable",
+		"customisable",
+		"logger",
+		"log"
+	],
 	"module": "src/index.ts",
 	"type": "module",
 	"scripts": {
