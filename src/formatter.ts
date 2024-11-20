@@ -47,7 +47,7 @@ export class Formatter {
 	public formatLevelAnsi(level: LogLevel): Formatter {
 		this.res = this.res.replaceAll(
 			'!{level}!',
-			this.options.getLevelFormat(logLevelToLogType(level)).ansi!
+			this.options.getLevelFormat(logLevelToLogType(level)).ansi! + this.options.getStyle('reset')
 		);
 
 		return this;

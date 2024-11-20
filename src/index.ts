@@ -85,7 +85,8 @@ export class Consol {
 			.formatHex()
 			.formatCode();
 
-		console.log(this.options.getStyle('reset') + fmt.result());
+		const reset = this.options.getStyle('reset');
+		console.log(reset + fmt.result() + reset);
 	}
 
 	public log(...args: any[]) {
@@ -120,7 +121,7 @@ export class Consol {
 
 export const consol = new Consol();
 consol.info('meow mrrp meow');
-consol.success('meow mrrp meow !{code:js:console.log("hello world")}!');
+consol.success('meow mrrp meow');
 consol.warning('meow mrrp meow');
 consol.debug('meow mrrp meow');
 consol.error('meow mrrp meow');

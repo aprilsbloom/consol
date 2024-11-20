@@ -20,7 +20,7 @@ export class OptionsManager {
 		},
 
 		format: {
-			log: "!{date:%Y/%m/%d %H:%M:%S}! !{styles:bold}!!{level}!!{styles:reset}! !{message}!",
+			log: "!{date:%Y/%m/%d %H:%M:%S}! !{level}! !{message}!",
 			path: 'logs/!{date:%Y-%m-%d}!.log',
 			level: {
 				log: { str: '!{hex:fg:#a8a8a8}!LOG' },
@@ -139,10 +139,10 @@ export class OptionsManager {
 	}
 
 	public getFormat(format: Exclude<keyof LoggerOptions['format'], 'level'>): string {
-		return this.options.format[format];
+		return this.options.format[format] + this.options.styles.reset;
 	}
 
-	public setLogFormat(value: string) {
+	public setBaseLogFormat(value: string) {
 		this.setFormat('log', value);
 	}
 
@@ -166,6 +166,7 @@ export class OptionsManager {
 		const ansiStr = new Formatter(this, value)
 			.formatHex()
 			.formatStyles()
+			.formatCode()
 			.result();
 
 		this.options.format.level[level] = {
@@ -176,6 +177,10 @@ export class OptionsManager {
 
 	public getLevelFormat(level: LogType): Format {
 		return this.options.format.level[level];
+	}
+
+	public setLogFormat(value: string) {
+		this.setLevelFormat('log', value);
 	}
 
 	public setInfoFormat(value: string) {
