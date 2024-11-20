@@ -50,7 +50,7 @@ export class Consol {
 		writeFileSync(path, `${msg}\n`, { flag: 'a' });
 	}
 
-	private _log(level: LogLevel, ...args: any[]) {
+	private _log(level: LogLevel, args: any[]) {
 		if (!this.options.shouldLog(level)) return;
 
 		const msg = this.stringify(...args);
@@ -74,49 +74,51 @@ export class Consol {
 			this.writeToFile(level, tmp);
 		}
 
-		// now we can add the actual level content, styles
-		// & hex templates
+		// now we can add the actual level content,
+		// styles & hex templates
 		fmt
 			.formatLevelAnsi(level)
 			.formatStyles()
-			.formatHex()
-			.result();
+			.formatHex();
 
 		console.log(this.options.getStyle('reset') + fmt.result());
 	}
 
 	public log(...args: any[]) {
-		this._log(LogLevel.Log, ...args);
+		this._log(LogLevel.Log, args);
 	}
 
 	public info(...args: any[]) {
-		this._log(LogLevel.Info, ...args);
+		this._log(LogLevel.Info, args);
 	}
 
 	public success(...args: any[]) {
-		this._log(LogLevel.Success, ...args);
+		this._log(LogLevel.Success, args);
 	}
 
 	public warning(...args: any[]) {
-		this._log(LogLevel.Warning, ...args);
+		this._log(LogLevel.Warning, args);
 	}
 
 	public error(...args: any[]) {
-		this._log(LogLevel.Error, ...args);
+		this._log(LogLevel.Error, args);
 	}
 
 	public fatal(...args: any[]) {
-		this._log(LogLevel.Fatal, ...args);
+		this._log(LogLevel.Fatal, args);
 		process.exit(1);
 	}
 
 	public debug(...args: any[]) {
-		this._log(LogLevel.Debug, ...args);
+		this._log(LogLevel.Debug, args);
 	}
 }
 
 export const consol = new Consol();
-consol.info('meow mrrp meow');
+consol.info('meow mrrp meow', {
+	foo: 'bar',
+	baz: () => 'qux'
+});
 consol.success('meow mrrp meow');
 consol.warning('meow mrrp meow');
 consol.debug('meow mrrp meow');

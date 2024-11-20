@@ -20,16 +20,16 @@ export class OptionsManager {
 		},
 
 		format: {
-			log: "!{date:%Y/%m/%d %H:%M:%S} !{styles.bold}!{level}!{styles.reset} !{message}",
-			path: 'logs/!{date:%Y-%m-%d}.log',
+			log: "!{date:%Y/%m/%d %H:%M:%S}! !{styles.bold}!!{level}!!{styles.reset}! !{message}!",
+			path: 'logs/!{date:%Y-%m-%d}!.log',
 			level: {
-				log: { str: '!{hex:fg:#a8a8a8}LOG' },
-				info: { str: '!{hex:fg:#a8a8a8}INFO' },
-				success: { str: '!{hex:fg:#79ef77}SUCCESS' },
-				warning: { str: '!{hex:fg:#efe777}WARNING' },
-				error: { str: '!{hex:fg:#ef8d77}ERROR' },
-				fatal: { str: '!{hex:fg:#ef8d77}FATAL' },
-				debug: { str: '!{hex:fg:#a8a8a8}DEBUG' },
+				log: { str: '!{hex:fg:#a8a8a8}!LOG' },
+				info: { str: '!{hex:fg:#a8a8a8}!INFO' },
+				success: { str: '!{hex:fg:#79ef77}!SUCCESS' },
+				warning: { str: '!{hex:fg:#efe777}!WARNING' },
+				error: { str: '!{hex:fg:#ef8d77}!ERROR' },
+				fatal: { str: '!{hex:fg:#ef8d77}!FATAL' },
+				debug: { str: '!{hex:fg:#a8a8a8}!DEBUG' },
 			},
 		}
 	};

@@ -21,3 +21,7 @@ export function logTypeToLogLevel(type: LogType): LogLevel {
 		case 'debug': return LogLevel.Debug;
 	}
 }
+
+export function logLevelToLogType(level: LogLevel): LogType {
+	return LogLevel[level].toLowerCase() as LogType;
+}

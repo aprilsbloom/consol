@@ -21,24 +21,24 @@ consol currently allows you to change the format of all logs, the path to each l
 consol includes some built in placeholder strings that you can add/remove to your log format.
 
 these are the placeholders currently implemented:
-- `!{level}`
+- `!{level}!`
   - print the format associated with the current log level
   - functions can be included in these
-- `!{message}`
+- `!{message}!`
   - the actual content of your message (no clue why you'd want to remove this)
 
 
 ### functions
-consol supports functions, which follow the format of `!{name:arg}`. most of these functions are omitted from logs that are written to files as they're mostly purely cosmetic.
+consol supports functions, which follow the format of `!{name:arg}!`. most of these functions are omitted from logs that are written to files as they're mostly purely cosmetic.
 
 consol currently supports the following:
-- `!{date:strftime}`
+- `!{date:strftime}!`
   - `strftime` can be replaced with any supported [strftime](https://github.com/samsonjs/strftime?tab=readme-ov-file#supported-specifiers) specifiers, as well as any additional text
-- `!{hex:bg/fg:#color}`
+- `!{hex:bg/fg:#color}!`
   - `color` can be either a shorthand hex value (3 characters long) or the full 6 characters long.
     - you *can* include the #, but it isn't required
   - `bg/fg` must be one or the other, they represent background and foreground colors respectively
-- `!{styles:style}`
+- `!{styles:style}!`
   - currently, consol supports the following styles:
     - `reset`, `bold`, `italic`, `underline` and `strikethrough`
   - these are just shorthand for the raw ansi values

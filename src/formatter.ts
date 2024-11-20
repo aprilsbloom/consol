@@ -1,14 +1,14 @@
 import strftime from "strftime";
-import { LogLevel } from "./enums";
+import { type LogLevel, logLevelToLogType } from "./enums";
 import type { OptionsManager } from "./optionsManager";
-import type { LogType, Style } from "./types";
+import type { Style } from "./types";
 import { hexToAnsi } from "./utils";
 
 const REGEX = {
-	DATE: /!{date:(.*?%[\s\S])}/g,
-	STYLES: /!{styles.([a-z]+)}/g,
-	HEX: /!{hex:(b|f)g:(#?[0-9a-fA-F]{3}|#?[0-9a-fA-F]{6})}/g,
-	REMOVE_TEMPLATES: /!{[^}]+}/g,
+	DATE: /!{date:(.*?%[\s\S])}!/g,
+	STYLES: /!{styles.([a-z]+)}!/g,
+	HEX: /!{hex:(b|f)g:(#?[0-9a-fA-F]{3}|#?[0-9a-fA-F]{6})}!/g,
+	REMOVE_TEMPLATES: /!{[^}]+}!/g,
 	REMOVE_ANSI: /\x1b\[[^m]+m/g,
 }
 
@@ -38,14 +38,14 @@ export class Formatter {
 	}
 
 	public formatMessage(msg: string): Formatter {
-		this.res = this.res.replaceAll('!{message}', msg);
+		this.res = this.res.replaceAll('!{message}!', msg);
 		return this;
 	}
 
 	public formatLevelAnsi(level: LogLevel): Formatter {
 		this.res = this.res.replaceAll(
-			'!{level}',
-			this.options.getLevelFormat(LogLevel[level].toLowerCase() as LogType).ansi!
+			'!{level}!',
+			this.options.getLevelFormat(logLevelToLogType(level)).ansi!
 		);
 
 		return this;
@@ -53,8 +53,8 @@ export class Formatter {
 
 	public formatLevelStr(level: LogLevel): Formatter {
 		this.res = this.res.replaceAll(
-			'!{level}',
-			this.options.getLevelFormat(LogLevel[level].toLowerCase() as LogType).str
+			'!{level}!',
+			this.options.getLevelFormat(logLevelToLogType(level)).str
 		);
 
 		return this;
