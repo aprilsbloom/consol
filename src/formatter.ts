@@ -9,7 +9,7 @@ const REGEX = {
 	DATE: /!{date:(.*?%[\s\S])}!/g,
 	STYLES: /!{styles:([a-z]+)}!/g,
 	HEX: /!{hex:(b|f)g:(#?[0-9a-fA-F]{3}|#?[0-9a-fA-F]{6})}!/g,
-	CODE: /!{code:([a-zA-Z\+\.]+):([\s\S]+)}!/g,
+	CODE: /!{code:([a-zA-Z\+\.\#-]+):([\s\S]+)}!/g,
 	REMOVE_TEMPLATES: /!{[^}]+}!/g,
 	REMOVE_ANSI: /\x1b\[[^m]+m/g,
 }
