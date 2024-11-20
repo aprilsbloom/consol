@@ -1,8 +1,11 @@
-name: Testing actions
-run-name: Testing actions name🚀
-on: [push]
+name: Publish to NPM
+on: [release]
 jobs:
   Test:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "meow"
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun --version
