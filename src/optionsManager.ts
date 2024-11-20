@@ -1,6 +1,7 @@
 import { merge } from "lodash";
 import { LogLevel } from "./enums";
-import type { LoggerOptions } from "./types";
+import type { Format, LoggerOptions, LogType, Style } from "./types";
+import { Formatter } from "./formatter";
 
 
 export class OptionsManager {
@@ -39,6 +40,7 @@ export class OptionsManager {
 
 	public set(options: Partial<LoggerOptions>): void {
 		this.options = merge(this.options, options);
+		this.setLevelFormats(this.options.format.level);
 	}
 
 	public setKey(key: string, value: any): void {
@@ -114,6 +116,15 @@ export class OptionsManager {
 		return this.options.jsonIndent;
 	}
 
+	// Styles
+	public getStyles(): LoggerOptions['styles'] {
+		return this.options.styles;
+	}
+
+	public getStyle(style: Style): string {
+		return this.options.styles[style];
+	}
+
 	// Base formats
 	public setFormats(formats: Partial<LoggerOptions['format']>) {
 		this.options.format = merge(this.options.format, formats);
@@ -127,6 +138,10 @@ export class OptionsManager {
 		this.options.format[format] = value;
 	}
 
+	public getFormat(format: Exclude<keyof LoggerOptions['format'], 'level'>): string {
+		return this.options.format[format];
+	}
+
 	public setLogFormat(value: string) {
 		this.setFormat('log', value);
 	}
@@ -136,41 +151,54 @@ export class OptionsManager {
 	}
 
 	// Level formats
-	// public setLevelFormats(levels: Partial<LoggerOptions['format']['level']>) {
-	// 	this.options.format.level = merge(this.options.format.level, levels);
-	// 	for (const [level, format] of Object.entries(levels) as [LogType, Format][]) {
-	// 		this.setLevelFormat(level, format.str);
-	// 	}
-	// }
+	public setLevelFormats(levels: Partial<LoggerOptions['format']['level']>) {
+		this.options.format.level = merge(this.options.format.level, levels);
+		for (const [level, format] of Object.entries(levels) as [LogType, Format][]) {
+			this.setLevelFormat(level, format.str);
+		}
+	}
 
-	// public setLevelFormat(level: LogType, value: string) {
-	// 	this.options.format.level[level] = {
-	// 		str: value,
-	// 		ansi: this.formatHexTemplate(this.formatStylesTemplate(value))
-	// 	}
-	// }
+	public getLevelFormats(): LoggerOptions['format']['level'] {
+		return this.options.format.level;
+	}
 
-	// public setInfoFormat(value: string) {
-	// 	this.setLevelFormat('info', value);
-	// }
+	public setLevelFormat(level: LogType, value: string) {
+		const ansiStr = new Formatter(this, value)
+			.formatHex()
+			.formatStyles()
+			.result();
 
-	// public setSuccessFormat(value: string) {
-	// 	this.setLevelFormat('success', value);
-	// }
+		this.options.format.level[level] = {
+			str: value,
+			ansi: ansiStr
+		}
+	}
 
-	// public setWarningFormat(value: string) {
-	// 	this.setLevelFormat('warning', value);
-	// }
+	public getLevelFormat(level: LogType): Format {
+		return this.options.format.level[level];
+	}
 
-	// public setErrorFormat(value: string) {
-	// 	this.setLevelFormat('error', value);
-	// }
+	public setInfoFormat(value: string) {
+		this.setLevelFormat('info', value);
+	}
 
-	// public setFatalFormat(value: string) {
-	// 	this.setLevelFormat('fatal', value);
-	// }
+	public setSuccessFormat(value: string) {
+		this.setLevelFormat('success', value);
+	}
 
-	// public setDebugFormat(value: string) {
-	// 	this.setLevelFormat('debug', value);
-	// }
+	public setWarningFormat(value: string) {
+		this.setLevelFormat('warning', value);
+	}
+
+	public setErrorFormat(value: string) {
+		this.setLevelFormat('error', value);
+	}
+
+	public setFatalFormat(value: string) {
+		this.setLevelFormat('fatal', value);
+	}
+
+	public setDebugFormat(value: string) {
+		this.setLevelFormat('debug', value);
+	}
 }

@@ -1,6 +1,6 @@
-import type { OptionsManager } from "./optionsManager";
 import strftime from "strftime";
 import { LogLevel } from "./enums";
+import type { OptionsManager } from "./optionsManager";
 import type { LogType, Style } from "./types";
 import { hexToAnsi } from "./utils";
 
@@ -14,16 +14,13 @@ const REGEX = {
 
 export class Formatter {
 	private options: OptionsManager;
-	private level: LogLevel;
 	private res: string;
 
 	constructor(
 		options: OptionsManager,
-		level: LogLevel,
 		format: string,
 	) {
 		this.options = options;
-		this.level = level;
 		this.res = format;
 	}
 
@@ -32,7 +29,7 @@ export class Formatter {
 	}
 
 	public clone(): Formatter {
-		return new Formatter(this.options, this.level, this.res);
+		return new Formatter(this.options, this.res);
 	}
 
 	public formatDate(): Formatter {
@@ -40,13 +37,21 @@ export class Formatter {
 		return this;
 	}
 
-	public formatLevelAnsi(): Formatter {
-		this.res = this.res.replaceAll('!{level}', this.options.get().format.level[LogLevel[this.level].toLowerCase() as LogType].ansi!);
+	public formatLevelAnsi(level: LogLevel): Formatter {
+		this.res = this.res.replaceAll(
+			'!{level}',
+			this.options.getLevelFormat(LogLevel[level].toLowerCase() as LogType).ansi!
+		);
+
 		return this;
 	}
 
-	public formatLevelStr(): Formatter {
-		this.res = this.res.replaceAll('!{level}', this.options.get().format.level[LogLevel[this.level].toLowerCase() as LogType].str);
+	public formatLevelStr(level: LogLevel): Formatter {
+		this.res = this.res.replaceAll(
+			'!{level}',
+			this.options.getLevelFormat(LogLevel[level].toLowerCase() as LogType).str
+		);
+
 		return this;
 	}
 
@@ -57,7 +62,7 @@ export class Formatter {
 
 	public formatStyles(): Formatter {
 		this.res = this.res.replaceAll(REGEX.STYLES, (full, style: Style) => {
-			const code = this.options.get().styles[style];
+			const code = this.options.getStyle(style);
 			if (!code) return full;
 			return code;
 		});

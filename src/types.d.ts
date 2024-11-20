@@ -1,7 +1,6 @@
 import type { LogLevel } from "./enums";
 
-export type LogType = keyof typeof LogLevel extends infer T ? Lowercase<T & string> : never;
-export type Style = 'reset' | 'bold' | 'italic' | 'underline' | 'strikethrough';
+export type StringifyFunc = (...args: any[]) => string;
 
 export interface LoggerOptions {
 	enabled: boolean;
@@ -15,6 +14,9 @@ export interface LoggerOptions {
 		level: Record<LogType, Format>;
 	}
 }
+
+export type LogType = keyof typeof LogLevel extends infer T ? Lowercase<T & string> : never;
+export type Style = 'reset' | 'bold' | 'italic' | 'underline' | 'strikethrough';
 
 export interface Format {
 	str: string;
