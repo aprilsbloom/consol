@@ -32,16 +32,18 @@ these are the placeholders currently implemented:
 consol supports functions, which follow the format of `!{name:arg}!`. most of these functions are omitted from logs that are written to files as they're mostly purely cosmetic.
 
 consol currently supports the following:
-- `!{date:strftime}!`
-  - `strftime` can be replaced with any supported [strftime](https://github.com/samsonjs/strftime?tab=readme-ov-file#supported-specifiers) specifiers, as well as any additional text
-- `!{hex:bg/fg:#color}!`
+- `!{date:format}!`
+  - `format` can be replaced with any supported [strftime](https://github.com/samsonjs/strftime?tab=readme-ov-file#supported-specifiers) specifiers, as well as any additional text
+- `!{hex:type:#color}!`
+  - `type` must be either `bg` or `fg` for background & foreground (text) colors
   - `color` can be either a shorthand hex value (3 characters long) or the full 6 characters long.
     - you *can* include the #, but it isn't required
-  - `bg/fg` must be one or the other, they represent background and foreground colors respectively
 - `!{styles:style}!`
   - currently, consol supports the following styles:
     - `reset`, `bold`, `italic`, `underline` and `strikethrough`
   - these are just shorthand for the raw ansi values
+- `!{code:language:code}`
+  - consol supports every language & alias listed [here](https://github.com/highlightjs/highlight.js/blob/main/SUPPORTED_LANGUAGES.md)
 
 in the path format, only the date function is supported, as it doesn't make sense to include ansi values.
 when outputting to a file, all functions are also stripped except for the date function.

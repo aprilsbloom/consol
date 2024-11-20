@@ -12,21 +12,24 @@ export class Consol {
 	}
 
 	public stringify(...args: any[]): string {
-		return args.map(item => {
-			if (typeof item === 'string') return item;
-			if (typeof item === 'object') {
-				return JSON.stringify(
-					item,
-					(_, value) => {
-						if (typeof value === 'function') return value.toString();
-						return value;
-					},
-					this.options.getJsonIndent()
-				);
-			}
-			if (item?.toString) return item.toString();
-			return item;
-		}).join(' ')
+		return args
+			.map(item => {
+				if (typeof item === 'string') return item;
+				if (typeof item === 'object') {
+					return JSON.stringify(
+						item,
+						(_, value) => {
+							if (typeof value === 'function') return value.toString();
+							return value;
+						},
+						this.options.getJsonIndent()
+					);
+				}
+				if (item?.toString) return item.toString();
+				return item;
+			})
+			.join(' ')
+			.trim();
 	}
 
 	public setStringifyFunc(fn: StringifyFunc) {
@@ -79,7 +82,8 @@ export class Consol {
 		fmt
 			.formatLevelAnsi(level)
 			.formatStyles()
-			.formatHex();
+			.formatHex()
+			.formatCode();
 
 		console.log(this.options.getStyle('reset') + fmt.result());
 	}
@@ -115,11 +119,8 @@ export class Consol {
 }
 
 export const consol = new Consol();
-consol.info('meow mrrp meow', {
-	foo: 'bar',
-	baz: () => 'qux'
-});
-consol.success('meow mrrp meow');
+consol.info('meow mrrp meow');
+consol.success('meow mrrp meow !{code:js:console.log("hello world")}!');
 consol.warning('meow mrrp meow');
 consol.debug('meow mrrp meow');
 consol.error('meow mrrp meow');

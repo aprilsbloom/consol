@@ -2,12 +2,14 @@ import strftime from "strftime";
 import { type LogLevel, logLevelToLogType } from "./enums";
 import type { OptionsManager } from "./optionsManager";
 import type { Style } from "./types";
-import { hexToAnsi } from "./utils";
+import { hexToAnsi, SUPPORTED_LANGUAGES } from "./utils";
+import { highlight } from 'cli-highlight';
 
 const REGEX = {
 	DATE: /!{date:(.*?%[\s\S])}!/g,
-	STYLES: /!{styles.([a-z]+)}!/g,
+	STYLES: /!{styles:([a-z]+)}!/g,
 	HEX: /!{hex:(b|f)g:(#?[0-9a-fA-F]{3}|#?[0-9a-fA-F]{6})}!/g,
+	CODE: /!{code:([a-zA-Z\+\.]+):([\s\S]+)}!/g,
 	REMOVE_TEMPLATES: /!{[^}]+}!/g,
 	REMOVE_ANSI: /\x1b\[[^m]+m/g,
 }
@@ -73,6 +75,22 @@ export class Formatter {
 	public formatHex(): Formatter {
 		this.res = this.res.replaceAll(REGEX.HEX, (_, type, hex) => {
 			return hexToAnsi(hex, type === 'b');
+		});
+
+		return this;
+	}
+
+	public formatCode(): Formatter {
+		this.res = this.res.replaceAll(REGEX.CODE, (full, lang, code) => {
+			lang = lang.toLowerCase().trim();
+			if (!SUPPORTED_LANGUAGES.includes(lang)) return full;
+
+			try {
+				const res = highlight(code, { language: lang });
+				return res;
+			} catch (e) {
+				return full;
+			}
 		});
 
 		return this;
