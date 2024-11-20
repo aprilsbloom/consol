@@ -37,6 +37,11 @@ export class Formatter {
 		return this;
 	}
 
+	public formatMessage(msg: string): Formatter {
+		this.res = this.res.replaceAll('!{message}', msg);
+		return this;
+	}
+
 	public formatLevelAnsi(level: LogLevel): Formatter {
 		this.res = this.res.replaceAll(
 			'!{level}',
@@ -52,11 +57,6 @@ export class Formatter {
 			this.options.getLevelFormat(LogLevel[level].toLowerCase() as LogType).str
 		);
 
-		return this;
-	}
-
-	public formatMessage(msg: string): Formatter {
-		this.res = this.res.replaceAll('!{message}', msg);
 		return this;
 	}
 

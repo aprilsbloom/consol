@@ -20,7 +20,7 @@ export class OptionsManager {
 		},
 
 		format: {
-			log: "!{date:%Y/%m/%d %H:%M:%S} !{styles.strikethrough}!{styles.bold}!{styles.italic}!{level}!{styles.reset} !{message}",
+			log: "!{date:%Y/%m/%d %H:%M:%S} !{styles.bold}!{level}!{styles.reset} !{message}",
 			path: 'logs/!{date:%Y-%m-%d}.log',
 			level: {
 				log: { str: '!{hex:fg:#a8a8a8}LOG' },
