@@ -116,7 +116,6 @@ export class Consol {
 }
 
 export const consol = new Consol();
-consol.options.setOutputToFile(true);
 consol.info('meow mrrp meow');
 consol.success('meow mrrp meow');
 consol.warning('meow mrrp meow');

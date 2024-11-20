@@ -2,7 +2,7 @@ import { merge } from "lodash";
 import { LogLevel } from "./enums";
 import type { Format, LoggerOptions, LogType, Style } from "./types";
 import { Formatter } from "./formatter";
-
+import { ANSI_ESCAPE } from "./utils";
 
 export class OptionsManager {
 	private options: LoggerOptions = {
@@ -12,15 +12,15 @@ export class OptionsManager {
 		jsonIndent: 2,
 
 		styles: {
-			reset: '\x1b[0m',
-			bold: '\x1b[1m',
-			italic: '\x1b[3m',
-			underline: '\x1b[4m',
-			strikethrough: '\x1b[9m',
+			reset: `${ANSI_ESCAPE}[0m`,
+			bold: `${ANSI_ESCAPE}[1m`,
+			italic: `${ANSI_ESCAPE}[3m`,
+			underline: `${ANSI_ESCAPE}[4m`,
+			strikethrough: `${ANSI_ESCAPE}[9m`,
 		},
 
 		format: {
-			log: "!{date:%Y/%m/%d %H:%M:%S} !{level}!{styles.reset} !{message}",
+			log: "!{date:%Y/%m/%d %H:%M:%S} !{styles.strikethrough}!{styles.bold}!{styles.italic}!{level}!{styles.reset} !{message}",
 			path: 'logs/!{date:%Y-%m-%d}.log',
 			level: {
 				log: { str: '!{hex:fg:#a8a8a8}LOG' },
