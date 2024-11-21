@@ -34,11 +34,22 @@ jobs:
   Publish:
     needs: Build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Download build files
         uses: actions/download-artifact@v4
         with:
           name: build
 
-      - name: List files
-        run: ls -la
+      - name: Setup .nvmrc
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Publish package to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
