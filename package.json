@@ -16,8 +16,8 @@
 		"logger",
 		"log"
 	],
-	"module": "src/index.ts",
 	"type": "module",
+	"module": "index.js",
 	"scripts": {
 		"start": "bun src/index.ts",
 		"build": "rslib build"
