@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun i
+
+      - name: Build package
+        run: bun run build
+
+      - name: Copy files into dist
+        run: |
+          cp package.json dist
+          cp README.md dist
+
+      - name: Upload build files
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: dist
+
+  Publish:
+    needs: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download build files
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+
+      - name: Setup .nvmrc
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Publish package to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

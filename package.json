@@ -1,11 +1,11 @@
 {
-	"name": "consol.js",
+	"name": "consol.js-testing2",
 	"author": "aprilsbloom",
 	"version": "1.0.0",
-  "description": "a customizable logging framework written in typescript",
+	"description": "a customizable logging framework written in typescript",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/aprilsbloom/consol"
+		"url": "git+https://github.com/aprilsbloom/consol.git"
 	},
 	"keywords": [
 		"console",
@@ -16,13 +16,14 @@
 		"logger",
 		"log"
 	],
-	"module": "src/index.ts",
 	"type": "module",
+	"module": "index.js",
 	"scripts": {
 		"start": "bun src/index.ts",
 		"build": "rslib build"
 	},
 	"devDependencies": {
+		"@microsoft/api-extractor": "^7.47.11",
 		"@rslib/core": "^0.0.18",
 		"@types/bun": "latest",
 		"@types/lodash": "^4.17.13",
