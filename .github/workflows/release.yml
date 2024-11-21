@@ -1,8 +1,8 @@
 name: Release
 
-on: ['push']
-  # release:
-  #   types: [published]
+on:
+  release:
+    types: [published]
 
 jobs:
   Build:
@@ -22,7 +22,7 @@ jobs:
       - name: Build package
         run: bun run build
 
-      - name: Copy filesinto dist
+      - name: Copy files into dist
         run: |
           cp package.json dist
           cp README.md dist
