@@ -22,8 +22,10 @@ jobs:
       - name: Build package
         run: bun run build
 
-      - name: Copy package.json into dist
-        run: cp package.json dist
+      - name: Copy filesinto dist
+        run: |
+          cp package.json dist
+          cp README.md dist
 
       - name: Upload build files
         uses: actions/upload-artifact@v4
