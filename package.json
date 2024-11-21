@@ -2,7 +2,7 @@
 	"name": "consol.js",
 	"author": "aprilsbloom",
 	"version": "1.0.0",
-  "description": "a customizable logging framework written in typescript",
+	"description": "a customizable logging framework written in typescript",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aprilsbloom/consol"
@@ -23,6 +23,7 @@
 		"build": "rslib build"
 	},
 	"devDependencies": {
+		"@microsoft/api-extractor": "^7.47.11",
 		"@rslib/core": "^0.0.18",
 		"@types/bun": "latest",
 		"@types/lodash": "^4.17.13",
