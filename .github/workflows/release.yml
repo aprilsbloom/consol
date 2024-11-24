@@ -1,8 +1,9 @@
 name: Release
 
 on:
-  release:
-    types: [published]
+  push:
+    paths:
+      - 'package.json'
 
 jobs:
   Build:
@@ -55,3 +56,26 @@ jobs:
         run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  GithubRelease:
+    needs: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Download build files
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+
+      - name: Fetch version from package.json
+        id: version
+        run: echo ::set-output name=version::$(node -p "require('./package.json').version")
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
+          title: "Release ${{ steps.version.outputs.version }}"
+          files: "./**"
