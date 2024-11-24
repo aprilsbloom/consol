@@ -73,12 +73,30 @@ jobs:
         run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
 
       - name: Zip build files
-        run: zip -r ${{ env.version }}-dist.zip ./**
+        run: zip -r consol-${{ env.version }}-dist.zip ./**
+
+      - name: Clone repo for release changelog
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 50
 
       - name: Create release
-        uses: softprops/action-gh-release@v2
+        uses: fregante/release-with-changelog@v3
         with:
-          name: Release ${{ env.version }}
-          body: ""
-          tag_name: release-${{ env.version }}
-          files: ${{ env.version }}-dist.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
+          exclude: '^Meta'
+          commit-template: '- {title} (#{hash})'
+          template: |
+            ## Changelog
+
+            {commits}
+
+            {range}
+
+      # - name: Create release
+      #   uses: softprops/action-gh-release@v2
+      #   with:
+      #     name: v${{ env.version }}
+      #     body: ""
+      #     tag_name: v-${{ env.version }}
+      #     files: consol-${{ env.version }}-dist.zip
