@@ -73,7 +73,7 @@ jobs:
         run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
 
       - name: Zip build files
-        run: zip -r dist.zip ./**
+        run: zip -r ${{ env.version }}-dist.zip ./**
 
       - name: Create release
         uses: softprops/action-gh-release@v2
@@ -81,4 +81,3 @@ jobs:
           name: Release ${{ env.version }}
           files: ${{ env.version }}-dist.zip
           tag_name: ${{ env.version }}
-          prerelease: true
