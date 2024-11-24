@@ -80,5 +80,5 @@ jobs:
         with:
           name: v${{ env.version }}
           body: ""
-          tag_name: v-${{ env.version }}
+          tag_name: v${{ env.version }}
           files: consol-${{ env.version }}-dist.zip
