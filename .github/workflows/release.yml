@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     paths:
-      - 'biome.json'
+      - 'package.json'
 
 jobs:
   Build:
