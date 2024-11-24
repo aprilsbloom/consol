@@ -79,5 +79,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           name: Release ${{ env.version }}
+          body: ""
+          tag_name: release-${{ env.version }}
           files: ${{ env.version }}-dist.zip
-          tag_name: ${{ env.version }}
