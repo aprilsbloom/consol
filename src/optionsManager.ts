@@ -1,7 +1,7 @@
 import { merge } from "lodash";
 
 import { LogLevel } from "./enums";
-import type { Format, LoggerOptions, LogType, Style } from "./types";
+import type { Format, LoggerOptions, LogType, StringifyFunc, Style } from "./types";
 import { Formatter } from "./formatter";
 import { ANSI_ESCAPE } from "./utils";
 
@@ -74,6 +74,33 @@ export class OptionsManager {
 		}
 
 		return result;
+	}
+
+	// Utilities
+	public stringify(...args: any[]): string {
+		return args
+			.map(item => {
+				if (typeof item === 'string') return item;
+				if (typeof item === 'object') {
+					return JSON.stringify(
+						item,
+						(_, value) => {
+							if (typeof value === 'function') return value.toString();
+							return value;
+						},
+						this.options.jsonIndent
+					);
+				}
+				if (item?.toString) return item.toString();
+				return item;
+			})
+			.join(' ')
+			.trim();
+	}
+
+	public setStringifyFunc(fn: StringifyFunc) {
+		this.stringify = fn;
+		this.stringify = this.stringify.bind(this);
 	}
 
 	// Base

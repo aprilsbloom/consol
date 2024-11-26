@@ -3,39 +3,13 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { LogLevel } from "./enums";
 import { Formatter } from "./formatter";
 import { OptionsManager } from "./optionsManager";
-import type { LoggerOptions, StringifyFunc } from "./types";
+import type { LoggerOptions } from "./types";
 
 export class Consol {
 	public options: OptionsManager;
 
 	constructor(options: Partial<LoggerOptions> = {}) {
 		this.options = new OptionsManager(options);
-	}
-
-	public stringify(...args: any[]): string {
-		return args
-			.map(item => {
-				if (typeof item === 'string') return item;
-				if (typeof item === 'object') {
-					return JSON.stringify(
-						item,
-						(_, value) => {
-							if (typeof value === 'function') return value.toString();
-							return value;
-						},
-						this.options.getJsonIndent()
-					);
-				}
-				if (item?.toString) return item.toString();
-				return item;
-			})
-			.join(' ')
-			.trim();
-	}
-
-	public setStringifyFunc(fn: StringifyFunc) {
-		this.stringify = fn;
-		this.stringify = this.stringify.bind(this);
 	}
 
 	private writeToFile(level: LogLevel, msg: string) {
@@ -54,13 +28,28 @@ export class Consol {
 		writeFileSync(path, `${msg}\n`, { flag: 'a' });
 	}
 
-	private _log(level: LogLevel, args: any[]) {
+	public logMessage(level: LogLevel, args: any[]) {
 		if (!this.options.shouldLog(level)) return;
 
-		const msg = this.stringify(...args);
-		const fmt = new Formatter(this.options, this.options.getFormat('log'));
+		const msg = this.formatMessage(level, ...args);
+		if (this.options.shouldOutputToFile()) this.writeToFile(level, msg.file);
 
-		fmt
+		const reset = this.options.getStyle('reset');
+		console.log(reset + msg.terminal + reset);
+	}
+
+	public formatMessage(level: LogLevel, ...args: any[]): {
+		terminal: string;
+		file: string;
+	} {
+		const msg = this.options.stringify(...args);
+		const fmt = new Formatter(this.options, this.options.getFormat('log'));
+		const result = {
+			terminal: '',
+			file: ''
+		}
+
+		result.terminal = fmt
 			.formatDate()
 			.formatMessage(msg)
 			.formatRAM()
@@ -68,60 +57,59 @@ export class Consol {
 			.formatHostname()
 			.formatUsername()
 			.formatUptime()
-			.formatEnv();
+			.formatEnv()
+			.result();
 
 		// if writing to a file, we want to strip ansi codes and
 		// any other template string (excl. level)
 		if (this.options.shouldOutputToFile()) {
-			const tmp = fmt
+			result.file = fmt
 				.clone()
 				.formatLevelStr(level)
 				.removeAnsi()
 				.removeTemplates()
 				.result();
-
-			this.writeToFile(level, tmp);
 		}
 
 		// now we can add the actual level content,
-		// styles & hex templates
-		fmt
+		// styles & hex templates (they use ansi)
+		result.terminal = fmt
 			.formatLevelAnsi(level)
 			.formatStyles()
 			.formatHex()
-			.formatCode();
+			.formatCode()
+			.result();
 
-		const reset = this.options.getStyle('reset');
-		console.log(reset + fmt.result() + reset);
+		return result;
 	}
 
 	public log(...args: any[]) {
-		this._log(LogLevel.Log, args);
+		this.logMessage(LogLevel.Log, args);
 	}
 
 	public info(...args: any[]) {
-		this._log(LogLevel.Info, args);
+		this.logMessage(LogLevel.Info, args);
 	}
 
 	public success(...args: any[]) {
-		this._log(LogLevel.Success, args);
+		this.logMessage(LogLevel.Success, args);
 	}
 
 	public warning(...args: any[]) {
-		this._log(LogLevel.Warning, args);
+		this.logMessage(LogLevel.Warning, args);
 	}
 
 	public error(...args: any[]) {
-		this._log(LogLevel.Error, args);
+		this.logMessage(LogLevel.Error, args);
 	}
 
 	public fatal(...args: any[]) {
-		this._log(LogLevel.Fatal, args);
+		this.logMessage(LogLevel.Fatal, args);
 		process.exit(1);
 	}
 
 	public debug(...args: any[]) {
-		this._log(LogLevel.Debug, args);
+		this.logMessage(LogLevel.Debug, args);
 	}
 }
 
