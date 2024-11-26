@@ -127,9 +127,16 @@ export class Formatter {
 		const cpus = os.cpus();
 		if (!cpus.length) return this;
 
-		const names = cpus.map((c) => c.model).filter((val, ind, arr) => arr.indexOf(val) === ind);
+		const names = cpus
+			.map((c) => c.model)
+			.filter((val, ind, arr) => arr.indexOf(val) === ind);
+
 		const cores = cpus.length;
-		const speed = cpus[0].speed;
+
+		const speed = cpus
+			.map(c => c.speed)
+			.filter((val, ind, arr) => arr.indexOf(val) === ind)
+			.sort()[0];
 
 		this.res = this.res.replaceAll(REGEX.CPU, (_, type: 'name' | 'cores' | 'speed') => {
 			if (type === 'name') return names.join(', ');

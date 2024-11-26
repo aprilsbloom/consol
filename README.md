@@ -27,6 +27,10 @@ these are the placeholders currently implemented:
   - functions can be included in these
 - `!{message}!`
   - the actual content of your message (no clue why you'd want to remove this)
+- `!{username}!`
+  - the username of the current account logged into the system
+- `!{hostname}`
+  - the hostname of the system
 
 
 ## functions
@@ -45,6 +49,21 @@ consol currently supports the following:
   - these are just shorthand for the raw ansi values
 - `!{code:lang:code}`
   - consol supports every language & alias listed [here](https://github.com/highlightjs/highlight.js/blob/main/SUPPORTED_LANGUAGES.md)
+- `!{ram:type:format}`
+  - `type`: `free`, `used` and `total`
+    - these correspond to the total amount free, used, or amount of ram available on the system
+  - `format`: `percent` & `bytes`
+    - selecting percent returns the raw percentage value of the type
+    - selecting bytes returns the raw amount with no post processing involved
+- `!{cpu:format}`
+  - `format`: `name`, `cores`, `speed`
+    - `name` returns a comma separated list of each CPU on the system if present
+    - `cores` returns the integer number of cores
+    - `speed` returns the highest speed value across all CPUs present on the system
+- `!{uptime:format}`
+  - `format` can be replaced with any supported [strftime](https://github.com/samsonjs/strftime?tab=readme-ov-file#supported-specifiers) specifiers, as well as any additional text
+- `!{env:name}`
+  - `name` can be replaced with any valid system environment variable
 
 in the path format, only the date function is supported, as it doesn't make sense to include ansi values.
 when outputting to a file, all functions are also stripped except for the date function.
