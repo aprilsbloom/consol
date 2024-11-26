@@ -15,7 +15,7 @@ const REGEX = {
 	HEX: /!{hex:(b|f)g:(#?[0-9a-fA-F]{3}|#?[0-9a-fA-F]{6})}!/g,
 	CODE: /!{code:([a-zA-Z\+\.\#-]+):([\s\S]+)}!/g,
 	RAM: /!{ram:(free|used|total):(percent|bytes)}!/g,
-	CPU: /!{cpu:(name|cores|speed|usage)}/g,
+	CPU: /!{cpu:(name|cores|speed)}/g,
 	UPTIME: /!{uptime:(.*?%[\s\S])}!/g,
 	REMOVE_TEMPLATES: /!{[^}]+}!/g,
 	REMOVE_ANSI: /\x1b\[[^m]+m/g,
@@ -60,7 +60,6 @@ export class Formatter {
 		public formatLevelStr(level: LogLevel): Formatter {
 			const lvlFmt = this.options.getLevelFormat(logLevelToLogType(level)).str;
 			this.res = this.res.replaceAll("!{level}!", lvlFmt);
-
 			return this;
 		}
 
@@ -105,7 +104,7 @@ export class Formatter {
 
 			this.res = this.res.replaceAll(
 				REGEX.RAM,
-				(_, valType: "free" | "used" | "total", fmt: "percent" | "bytes") => {
+				(full, valType: "free" | "used" | "total", fmt: "percent" | "bytes") => {
 					if (fmt === "percent") {
 						if (valType === "free") return ((free / total) * 100).toFixed(2);
 						if (valType === "used") return ((used / total) * 100).toFixed(2);
@@ -116,7 +115,7 @@ export class Formatter {
 						if (valType === "total") return total.toString();
 					}
 
-					return "0.00";
+					return full;
 				},
 			);
 
@@ -134,11 +133,11 @@ export class Formatter {
 			const cores = cpus.length;
 			const speed = cpus[0].speed;
 
-			this.res = this.res.replaceAll(REGEX.CPU, (_, type: 'name' | 'cores' | 'speed') => {
+			this.res = this.res.replaceAll(REGEX.CPU, (full, type: 'name' | 'cores' | 'speed') => {
 				if (type === 'name') return names.join(', ');
 				if (type === 'cores') return cores.toString();
 				if (type === 'speed') return speed.toString();
-				return '';
+				return full;
 			});
 
 			return this;
