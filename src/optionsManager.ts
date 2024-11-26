@@ -1,4 +1,5 @@
 import { merge } from "lodash";
+
 import { LogLevel } from "./enums";
 import type { Format, LoggerOptions, LogType, Style } from "./types";
 import { Formatter } from "./formatter";
@@ -20,7 +21,7 @@ export class OptionsManager {
 		},
 
 		format: {
-			log: "!{date:%Y/%m/%d %H:%M:%S}! !{level}! !{message}!",
+			log: "!{date:%Y/%m/%d %H:%M:%S}! [!{username}!] !{level}! !{message}!",
 			path: 'logs/!{date:%Y-%m-%d}!.log',
 			level: {
 				log: { str: '!{hex:fg:#a8a8a8}!LOG' },

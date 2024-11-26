@@ -1,4 +1,5 @@
 export const ANSI_ESCAPE = '\x1b';
+
 export function hexToAnsi(hex: string, background: boolean = false): string {
 	hex = hex.toUpperCase();
 	if (hex.startsWith('#')) hex = hex.slice(1);

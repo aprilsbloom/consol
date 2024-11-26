@@ -1,4 +1,5 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
+
 import { LogLevel } from "./enums";
 import { Formatter } from "./formatter";
 import { OptionsManager } from "./optionsManager";
@@ -59,10 +60,13 @@ export class Consol {
 		const msg = this.stringify(...args);
 		const fmt = new Formatter(this.options, this.options.getFormat('log'));
 
-		// only do date & msg template for starters
 		fmt
 			.formatDate()
 			.formatMessage(msg)
+			.formatRAM()
+			.formatCPU()
+			.formatHostname()
+			.formatUsername();
 
 		// if writing to a file, we want to strip ansi codes and
 		// any other template string (excl. level)
@@ -120,4 +124,6 @@ export class Consol {
 }
 
 export const consol = new Consol();
+consol.info('test');
+
 export { LogLevel, logTypeToLogLevel, logLevelToLogType } from './enums';
