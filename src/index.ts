@@ -42,8 +42,8 @@ export class Consol {
 		const path = new Formatter(this.options, this.options.getFormat('path'))
 			.formatDate()
 			.formatLevelStr(level)
-			.removeAnsi()
 			.removeTemplates()
+			.removeAnsi()
 			.result();
 
 		const dir = path.includes('/') ?
@@ -67,7 +67,8 @@ export class Consol {
 			.formatCPU()
 			.formatHostname()
 			.formatUsername()
-			.formatUptime();
+			.formatUptime()
+			.formatEnv();
 
 		// if writing to a file, we want to strip ansi codes and
 		// any other template string (excl. level)
