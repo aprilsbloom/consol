@@ -1,5 +1,5 @@
 # consol
-a customizable logging framework written in typescript
+a customizable logging library written in typescript
 
 
 ## formats
