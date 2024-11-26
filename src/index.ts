@@ -66,7 +66,8 @@ export class Consol {
 			.formatRAM()
 			.formatCPU()
 			.formatHostname()
-			.formatUsername();
+			.formatUsername()
+			.formatUptime();
 
 		// if writing to a file, we want to strip ansi codes and
 		// any other template string (excl. level)

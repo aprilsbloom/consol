@@ -16,6 +16,7 @@ const REGEX = {
 	CODE: /!{code:([a-zA-Z\+\.\#-]+):([\s\S]+)}!/g,
 	RAM: /!{ram:(free|used|total):(percent|bytes)}!/g,
 	CPU: /!{cpu:(name|cores|speed|usage)}/g,
+	UPTIME: /!{uptime:(.*?%[\s\S])}!/g,
 	REMOVE_TEMPLATES: /!{[^}]+}!/g,
 	REMOVE_ANSI: /\x1b\[[^m]+m/g,
 }
@@ -38,7 +39,7 @@ export class Formatter {
 		}
 
 		public formatDate(): Formatter {
-			this.res = this.res.replaceAll(REGEX.DATE, (_, date) => strftime(date));
+			this.res = this.res.replaceAll(REGEX.DATE, (_, date: string) => strftime(date));
 			return this;
 		}
 
@@ -64,7 +65,7 @@ export class Formatter {
 		}
 
 		public formatStyles(): Formatter {
-			this.res = this.res.replaceAll(REGEX.STYLES, (full, style: Style) => {
+			this.res = this.res.replaceAll(REGEX.STYLES, (full: string, style: Style) => {
 				const code = this.options.getStyle(style);
 				if (!code) return full;
 				return code;
@@ -74,7 +75,7 @@ export class Formatter {
 		}
 
 		public formatHex(): Formatter {
-			this.res = this.res.replaceAll(REGEX.HEX, (_, type, hex) => {
+			this.res = this.res.replaceAll(REGEX.HEX, (_, type: 'b' | 'f', hex: string) => {
 				return hexToAnsi(hex, type === "b");
 			});
 
@@ -82,7 +83,7 @@ export class Formatter {
 		}
 
 		public formatCode(): Formatter {
-			this.res = this.res.replaceAll(REGEX.CODE, (full, lang, code) => {
+			this.res = this.res.replaceAll(REGEX.CODE, (full: string, lang: string, code: string) => {
 				lang = lang.toLowerCase().trim();
 				if (!SUPPORTED_LANGUAGES.includes(lang)) return full;
 
@@ -144,8 +145,7 @@ export class Formatter {
 		}
 
 		public formatHostname(): Formatter {
-			const hostname = os.hostname();
-			this.res = this.res.replaceAll("!{hostname}!", hostname);
+			this.res = this.res.replaceAll("!{hostname}!", os.hostname());
 			return this;
 		}
 
@@ -158,6 +158,18 @@ export class Formatter {
 			}
 
 			this.res = this.res.replaceAll("!{username}!", username);
+			return this;
+		}
+
+		public formatUptime(): Formatter {
+			// unix timestamps start at 1/1/1970 12:00:00 AM,
+			// so we need to subtract 12 hours to get the correct uptime
+			const uptime = (os.uptime() * 1000) - (12 * 1000 * 60 * 60);
+
+			this.res = this.res.replaceAll(REGEX.UPTIME, (_, fmt: string) => {
+				return strftime(fmt, new Date(uptime));
+			});
+
 			return this;
 		}
 
