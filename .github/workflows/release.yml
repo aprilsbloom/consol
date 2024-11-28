@@ -84,7 +84,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   GithubRelease:
-    needs: Publish
+    needs: Build
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -96,14 +96,12 @@ jobs:
           name: build
 
       - name: Zip build files
-        run: zip -r consol-${{ env.version }}-dist.zip ./**
+        run: zip -r consol-${{ needs.Build.outputs.version }}-dist.zip ./**
 
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          name: v${{ env.version }}
-          tag_name: v${{ env.version }}
-          files: consol-${{ env.version }}-dist.zip
+          name: v${{ needs.Build.outputs.version }}
+          tag_name: v${{ needs.Build.outputs.version }}
+          files: consol-${{ needs.Build.outputs.version }}-dist.zip
           generate_release_notes: true
-        env:
-          version: ${{ needs.Build.outputs.version }}
