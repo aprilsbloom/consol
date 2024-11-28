@@ -35,7 +35,7 @@ jobs:
           fi
         env:
           # why do i need to specify this?
-          GITHUB_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
 
       - name: Install dependencies
         run: bun i
