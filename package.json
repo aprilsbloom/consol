@@ -1,7 +1,7 @@
 {
 	"name": "consol.js",
 	"author": "aprilsbloom",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"description": "a customizable logging framework written in typescript",
 	"repository": {
 		"type": "git",
