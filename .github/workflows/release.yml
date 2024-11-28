@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     paths:
-      - 'version.txt'
+      - 'package.json'
 
 jobs:
   Build:
@@ -58,7 +58,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   GithubRelease:
-    needs: Build
+    needs: Publish
     runs-on: ubuntu-latest
     permissions:
       contents: write
