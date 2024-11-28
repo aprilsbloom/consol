@@ -114,6 +114,5 @@ export class Consol {
 }
 
 export const consol = new Consol();
-consol.info('test');
 
 export { LogLevel, logTypeToLogLevel, logLevelToLogType } from './enums';
