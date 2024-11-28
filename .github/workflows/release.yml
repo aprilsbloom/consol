@@ -17,6 +17,19 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Fetch version from package.json
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+
+      - name: Compare it to the latest release
+        id: compare
+        run: |
+          # https://stackoverflow.com/a/34899925
+          latest=$(gh release list --json name,isLatest --jq '.[] | select(.isLatest)|.name')
+          if [ "$latest" = "v${{ env.version }}" ]; then
+            echo "No new version found"
+            exit 1
+          fi
+
       - name: Install dependencies
         run: bun i
 
@@ -68,9 +81,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build
-
-      - name: Fetch version from package.json
-        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
 
       - name: Zip build files
         run: zip -r consol-${{ env.version }}-dist.zip ./**
