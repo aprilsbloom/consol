@@ -12,8 +12,6 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    outputs:
-      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,11 +22,7 @@ jobs:
           bun-version: latest
 
       - name: Fetch version from package.json
-        id: version
         run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
-
-      - name: Print version from step output
-        run: echo ${{ steps.version.outputs.version }}
 
       - name: Compare it to the latest release
         id: compare
@@ -95,13 +89,16 @@ jobs:
         with:
           name: build
 
+      - name: Fetch version from package.json (again -_- stupid env bullshit)
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+
       - name: Zip build files
-        run: zip -r consol-${{ needs.Build.outputs.version }}-dist.zip ./**
+        run: zip -r consol-${{ env.version }}-dist.zip ./**
 
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
-          name: v${{ needs.Build.outputs.version }}
-          tag_name: v${{ needs.Build.outputs.version }}
-          files: consol-${{ needs.Build.outputs.version }}-dist.zip
+          name: v${{ env.version }}
+          tag_name: v${{ env.version }}
+          files: consol-${{ env.version }}-dist.zip
           generate_release_notes: true
