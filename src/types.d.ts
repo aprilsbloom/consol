@@ -7,6 +7,7 @@ export type Style = 'reset' | 'bold' | 'italic' | 'underline' | 'strikethrough';
 
 export interface LoggerOptions {
 	enabled: boolean;
+	paused: boolean;
 	logLevel: LogLevel;
 	outputToFile: boolean;
 	jsonIndent: number;

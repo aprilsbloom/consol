@@ -1,9 +1,9 @@
 # consol
 a customizable logging library written in typescript
 
-![github stars](https://badgen.net/github/stars/aprilsbloom/consol) 
-![npm version](https://badgen.net/npm/v/consol.js) 
-![total npm downloads](https://badgen.net/npm/dt/consol.js) 
+![github stars](https://badgen.net/github/stars/aprilsbloom/consol)
+![npm version](https://badgen.net/npm/v/consol.js)
+![total npm downloads](https://badgen.net/npm/dt/consol.js)
 ![monthly npm downloads](https://badgen.net/npm/dm/consol.js)
 
 ## installation
@@ -119,8 +119,11 @@ when outputting to a file, all functions are also stripped except for the date f
 
 ## misc customization
 here are a few misc customization options consol also offers:
-- `consol.options.enableLogging()` / `consol.options.disableLogging()`
+- `consol.enableLogging()` / `consol.disableLogging()`
   - outright stop logging anything to the console
+- `consol.pauseLogging()` / `consol.resumeLogging()`
+  - pause/resume logging
+  - note that on calling `consol.pauseLogging()`, it pushes any new messages to a queue, which is flushed upon calling `consol.resumeLogging()`
 - `consol.options.setLogLevel()`
   - by default, this is set to `LogLevel.Fatal`, meaning it omits any debug logs.
 - `consol.options.setJsonIndent()`

@@ -28,8 +28,13 @@ export class Consol {
 		writeFileSync(path, `${msg}\n`, { flag: 'a' });
 	}
 
+	private logQueue: [LogLevel, any[]][] = [];
 	public logMessage(level: LogLevel, args: any[]) {
 		if (!this.options.shouldLog(level)) return;
+		if (this.options.isPaused()) {
+			this.logQueue.push([level, args]);
+			return;
+		}
 
 		const msg = this.formatMessage(level, ...args);
 		if (this.options.shouldOutputToFile()) this.writeToFile(level, msg.file);
@@ -111,8 +116,31 @@ export class Consol {
 	public debug(...args: any[]) {
 		this.logMessage(LogLevel.Debug, args);
 	}
+
+	public enableLogging(): void {
+		this.options.setEnabled(true);
+	}
+
+	public disableLogging(): void {
+		this.options.setEnabled(false);
+	}
+
+	public pauseLogging(): void {
+		this.options.setPaused(true);
+	}
+
+	public resumeLogging(): void {
+		this.options.setPaused(false);
+
+		for (const [level, args] of this.logQueue) {
+			this.logMessage(level, args);
+		}
+
+		this.logQueue = [];
+	}
 }
 
 export const consol = new Consol();
+export const createConsol = (options: Partial<LoggerOptions> = {}) => new Consol(options);
 
 export { LogLevel, logTypeToLogLevel, logLevelToLogType } from './enums';

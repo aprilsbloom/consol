@@ -9,6 +9,7 @@ import highlight from "cli-highlight";
 export class OptionsManager {
 	private options: LoggerOptions = {
 		enabled: true,
+		paused: false,
 		logLevel: LogLevel.Fatal,
 		outputToFile: false,
 		jsonIndent: 2,
@@ -40,6 +41,7 @@ export class OptionsManager {
 		this.set(options);
 	}
 
+	// Options utilities
 	public set(options: Partial<LoggerOptions>): void {
 		this.options = merge(this.options, options);
 		this.setLevelFormats(this.options.format.level);
@@ -77,7 +79,7 @@ export class OptionsManager {
 		return result;
 	}
 
-	// Utilities
+	// Format utilities
 	public stringify(...args: any[]): string {
 		return args
 			.map(item => {
@@ -129,12 +131,20 @@ export class OptionsManager {
 	}
 
 	// Base
-	public enableLogging(): void {
-		this.options.enabled = true;
+	public setEnabled(enabled: boolean): void {
+		this.options.enabled = enabled;
 	}
 
-	public disableLogging(): void {
-		this.options.enabled = false;
+	public isEnabled(): boolean {
+		return this.options.enabled;
+	}
+
+	public setPaused(paused: boolean): void {
+		this.options.paused = paused;
+	}
+
+	public isPaused(): boolean {
+		return this.options.paused;
 	}
 
 	public setLogLevel(level: LogLevel): void {
