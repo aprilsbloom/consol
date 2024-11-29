@@ -1,6 +1,10 @@
 # consol
 a customizable logging library written in typescript
 
+![github stars](https://badgen.net/github/stars/aprilsbloom/consol) 
+![npm version](https://badgen.net/npm/v/consol.js) 
+![total npm downloads](https://badgen.net/npm/dt/consol.js) 
+![monthly npm downloads](https://badgen.net/npm/dm/consol.js)
 
 ## formats
 by default, consol supports full customization of everything, mainly through the process of placeholder strings and functions as shown below.
