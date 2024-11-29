@@ -6,6 +6,50 @@ a customizable logging library written in typescript
 ![total npm downloads](https://badgen.net/npm/dt/consol.js) 
 ![monthly npm downloads](https://badgen.net/npm/dm/consol.js)
 
+## installation
+run the following command in your terminal depending on your package manager
+```bash
+bun install consol.js
+# or
+npm install consol.js
+# or
+pnpm install consol.js
+# or
+yarn install consol.js
+```
+
+then, to use consol in a project
+```ts
+import { consol } from 'consol.js';
+
+consol.log(
+  'hello world!',
+  {
+    'this is a test': 'to show stringified objects',
+    'it can include': [
+      "a",
+      "multitude",
+      "of",
+      "different",
+      "things!"
+    ]
+  },
+)
+
+/*
+2024/11/29 17:57:05 LOG hello world! {
+  "this is a test": "to show stringified objects",
+  "it can include": [
+    "a",
+    "multitude",
+    "of",
+    "different",
+    "things!"
+  ]
+}
+*/
+```
+
 ## formats
 by default, consol supports full customization of everything, mainly through the process of placeholder strings and functions as shown below.
 
