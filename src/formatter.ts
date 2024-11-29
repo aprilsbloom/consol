@@ -88,9 +88,8 @@ export class Formatter {
 			if (!SUPPORTED_LANGUAGES.includes(lang)) return code;
 
 			try {
-				const res = highlight(code, { language: lang });
-				return res;
-			} catch (e) {
+				return highlight(code, { language: lang });
+			} catch {
 				return code;
 			}
 		});

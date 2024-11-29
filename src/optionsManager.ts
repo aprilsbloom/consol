@@ -4,6 +4,7 @@ import { LogLevel } from "./enums";
 import type { Format, LoggerOptions, LogType, StringifyFunc, Style } from "./types";
 import { Formatter } from "./formatter";
 import { ANSI_ESCAPE } from "./utils";
+import highlight from "cli-highlight";
 
 export class OptionsManager {
 	private options: LoggerOptions = {
@@ -81,17 +82,41 @@ export class OptionsManager {
 		return args
 			.map(item => {
 				if (typeof item === 'string') return item;
-				if (typeof item === 'object') {
-					return JSON.stringify(
-						item,
-						(_, value) => {
-							if (typeof value === 'function') return value.toString();
-							return value;
-						},
-						this.options.jsonIndent
-					);
+
+				// highlihgt functions if passed in
+				if (typeof item === 'function') {
+					const func = item.toString();
+					try {
+						return highlight(func, { language: 'javascript' });
+					} catch {
+						return func;
+					}
 				}
-				if (item?.toString) return item.toString();
+
+				if (typeof item === 'object') {
+					// if there isn't a toString method, we can assume it's a native object
+					if (item.toString?.toString().includes('[native code]')) {
+						const val = JSON.stringify(
+							item,
+							(_, value) => {
+								if (typeof value === 'function') return value.toString();
+								if (typeof value === 'bigint') return `${value.toString()}n`;
+								return value;
+							},
+							this.options.jsonIndent
+						);
+
+						try {
+							return highlight(val, { language: 'json' });
+						} catch {
+							return val;
+						}
+					}
+
+					// otherwise just call it manually & assume it's a custom object
+					return item.toString();
+				}
+
 				return item;
 			})
 			.join(' ')
