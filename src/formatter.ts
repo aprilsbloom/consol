@@ -88,7 +88,7 @@ export class Formatter {
 			if (!SUPPORTED_LANGUAGES.includes(lang)) return code;
 
 			try {
-				return highlight(code, { language: lang });
+				return highlight(code, { language: lang, theme: this.options.getTheme(lang) });
 			} catch {
 				return code;
 			}

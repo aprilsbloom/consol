@@ -1,10 +1,11 @@
 import { merge } from "lodash";
+import highlight, { fromJson as themeFromJson, DEFAULT_THEME } from "cli-highlight";
+import type { Theme } from 'cli-highlight';
 
 import { LogLevel } from "./enums";
 import type { Format, LoggerOptions, LogType, StringifyFunc, Style } from "./types";
 import { Formatter } from "./formatter";
 import { ANSI_ESCAPE } from "./utils";
-import highlight from "cli-highlight";
 
 export class OptionsManager {
 	private options: LoggerOptions = {
@@ -12,7 +13,11 @@ export class OptionsManager {
 		paused: false,
 		logLevel: LogLevel.Fatal,
 		outputToFile: false,
-		jsonIndent: 2,
+
+		stringify: {
+			jsonIndent: 2,
+			themes: {},
+		},
 
 		styles: {
 			reset: `${ANSI_ESCAPE}[0m`,
@@ -80,6 +85,26 @@ export class OptionsManager {
 	}
 
 	// Format utilities
+	public getThemes(): LoggerOptions['stringify']['themes'] {
+		return this.options.stringify.themes;
+	}
+
+	public getTheme(name: string): Theme {
+		return this.options.stringify.themes[name] ?? DEFAULT_THEME;
+	}
+
+	public setThemes(themes: LoggerOptions['stringify']['themes']) {
+		this.options.stringify.themes = merge(this.options.stringify.themes, themes);
+
+		for (const [name, theme] of Object.entries(themes)) {
+			this.setTheme(name, theme);
+		}
+	}
+
+	public setTheme(name: string, theme: any) {
+		this.options.stringify.themes[name] = themeFromJson(theme);
+	}
+
 	public stringify(...args: any[]): string {
 		return args
 			.map(item => {
@@ -89,7 +114,7 @@ export class OptionsManager {
 				if (typeof item === 'function') {
 					const func = item.toString();
 					try {
-						return highlight(func, { language: 'javascript' });
+						return highlight(func, { language: 'javascript', theme: this.getTheme('javascript') });
 					} catch {
 						return func;
 					}
@@ -105,11 +130,11 @@ export class OptionsManager {
 								if (typeof value === 'bigint') return `${value.toString()}n`;
 								return value;
 							},
-							this.options.jsonIndent
+							this.options.stringify.jsonIndent
 						);
 
 						try {
-							return highlight(val, { language: 'json' });
+							return highlight(val, { language: 'json', theme: this.getTheme('json') });
 						} catch {
 							return val;
 						}
@@ -172,11 +197,11 @@ export class OptionsManager {
 	}
 
 	public setJsonIndent(indent: number): void {
-		this.options.jsonIndent = indent;
+		this.options.stringify.jsonIndent = indent;
 	}
 
 	public getJsonIndent(): number {
-		return this.options.jsonIndent;
+		return this.options.stringify.jsonIndent;
 	}
 
 	// Styles
