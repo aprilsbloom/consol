@@ -5,7 +5,7 @@ import type { Theme } from 'cli-highlight';
 import { LogLevel } from "./enums";
 import type { Format, LoggerOptions, LogType, StringifyFunc, Style } from "./types";
 import { Formatter } from "./formatter";
-import { ANSI_ESCAPE } from "./utils";
+import { styles } from "./utils";
 
 export class OptionsManager {
 	private options: LoggerOptions = {
@@ -17,14 +17,6 @@ export class OptionsManager {
 		stringify: {
 			jsonIndent: 2,
 			themes: {},
-		},
-
-		styles: {
-			reset: `${ANSI_ESCAPE}[0m`,
-			bold: `${ANSI_ESCAPE}[1m`,
-			italic: `${ANSI_ESCAPE}[3m`,
-			underline: `${ANSI_ESCAPE}[4m`,
-			strikethrough: `${ANSI_ESCAPE}[9m`,
 		},
 
 		format: {
@@ -205,12 +197,12 @@ export class OptionsManager {
 	}
 
 	// Styles
-	public getStyles(): LoggerOptions['styles'] {
-		return this.options.styles;
+	public getStyles(): typeof styles {
+		return styles;
 	}
 
 	public getStyle(style: Style): string {
-		return this.options.styles[style];
+		return styles[style];
 	}
 
 	// Base formats
@@ -227,7 +219,7 @@ export class OptionsManager {
 	}
 
 	public getFormat(format: Exclude<keyof LoggerOptions['format'], 'level'>): string {
-		return this.options.format[format] + this.options.styles.reset;
+		return this.options.format[format] + styles.reset;
 	}
 
 	public setBaseLogFormat(value: string) {

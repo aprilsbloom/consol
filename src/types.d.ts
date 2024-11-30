@@ -17,7 +17,6 @@ export interface LoggerOptions {
 		themes: Record<string, Theme>;
 	}
 
-	styles: Record<Style, string>;
 	format: {
 		log: string;
 		path: string;

@@ -1,16 +1,44 @@
+import supportsColor from 'supports-color';
+import type { Style } from './types';
+
 export const ANSI_ESCAPE = '\x1b';
+export const styles: Record<Style, string> = {
+	reset: `${ANSI_ESCAPE}[0m`,
+	bold: `${ANSI_ESCAPE}[1m`,
+	italic: `${ANSI_ESCAPE}[3m`,
+	underline: `${ANSI_ESCAPE}[4m`,
+	strikethrough: `${ANSI_ESCAPE}[9m`,
+}
 
 export function hexToAnsi(hex: string, background: boolean = false): string {
+	if (!supportsColor.stdout) return styles.reset;
+	if (!supportsColor.stdout.hasBasic) return styles.reset;
+
+	// deal w 16m colors first
+	if (supportsColor.stdout.has16m) {
+		const [r, g, b] = hexToRGB(hex);
+		return `${ANSI_ESCAPE}[${background ? '48' : '38'};2;${r};${g};${b}m`;
+	}
+
+	// deal w 256 colors
+	if (supportsColor.stdout.has256) {
+		// use this lookup table: https://stackoverflow.com/a/60392218
+	}
+
+	return styles.reset;
+}
+
+export function hexToRGB(hex: string): [number, number, number] {
 	hex = hex.toUpperCase();
 	if (hex.startsWith('#')) hex = hex.slice(1);
 	if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
 	if (!/^[0-9A-F]{6}$/i.test(hex)) throw new Error('Invalid hex string!');
 
-	const r = Number.parseInt(hex.slice(0, 2), 16).toString();
-	const g = Number.parseInt(hex.slice(2, 4), 16).toString();
-	const b = Number.parseInt(hex.slice(4, 6), 16).toString();
+	const r = Number.parseInt(hex.slice(0, 2), 16);
+	const g = Number.parseInt(hex.slice(2, 4), 16);
+	const b = Number.parseInt(hex.slice(4, 6), 16);
 
-	return `${ANSI_ESCAPE}[${background ? '48' : '38'};2;${r};${g};${b}m`;
+	return [r, g, b];
 }
 
 export const SUPPORTED_LANGUAGES = [
