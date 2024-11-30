@@ -1,10 +1,9 @@
-import { merge } from "lodash";
 import highlight, { fromJson as themeFromJson, DEFAULT_THEME } from "cli-highlight";
 import type { Theme } from 'cli-highlight';
-
+import { merge } from "lodash";
 import { LogLevel } from "./enums";
-import type { Format, FormatFunc, LoggerOptions, LogType, StringifyFunc, Style } from "./types";
 import { Formatter } from "./formatter";
+import type { Format, FormatFunc, FormatRunAt, LogType, LoggerOptions, StringifyFunc, Style } from "./types";
 import { styles } from "./utils";
 
 export class OptionsManager {
@@ -22,7 +21,7 @@ export class OptionsManager {
 		format: {
 			log: "!{date:%Y/%m/%d %H:%M:%S}! !{level}! !{message}!",
 			path: 'logs/!{date:%Y-%m-%d}!.log',
-			func: {},
+			func: [],
 			level: {
 				log: { str: '!{hex:fg:#a8a8a8}!LOG' },
 				info: { str: '!{hex:fg:#a8a8a8}!INFO' },
@@ -40,11 +39,34 @@ export class OptionsManager {
 	}
 
 	// Options utilities
+	/**
+	 * Merge the provided options with the default options.
+	 *
+	 * @param {Partial<LoggerOptions>} options
+	 * @memberof OptionsManager
+	 */
 	public set(options: Partial<LoggerOptions>): void {
 		this.options = merge(this.options, options);
 		this.setLevelFormats(this.options.format.level);
 	}
 
+	/**
+	 * Get the options object.
+	 *
+	 * @return {LoggerOptions}
+	 * @memberof OptionsManager
+	 */
+	public get(): LoggerOptions {
+		return this.options;
+	}
+
+	/**
+	 * Set an individual key's value.
+	 *
+	 * @param {string} key
+	 * @param {any} value
+	 * @memberof OptionsManager
+	 */
 	public setKey(key: string, value: any): void {
 		const keys = key.split('.');
 		let result: any = this.options;
@@ -60,10 +82,13 @@ export class OptionsManager {
 		result[keys[keys.length - 1]] = value;
 	}
 
-	public get(): LoggerOptions {
-		return this.options;
-	}
-
+	/**
+	 * Get an individual key's value.
+	 *
+	 * @param {string} key
+	 * @return {*}  {*}
+	 * @memberof OptionsManager
+	 */
 	public getKey(key: string): any {
 		const keys = key.split('.');
 		if (keys.length === 1) return (this.options as any)[key];
@@ -148,20 +173,24 @@ export class OptionsManager {
 		this.stringify = this.stringify.bind(this);
 	}
 
-	public registerFormatFunc(id: string, fn: FormatFunc) {
-		if (this.options.format.func[id]) {
+	public registerFormatFunc(id: string, runAt: FormatRunAt, func: FormatFunc) {
+		if (this.options.format.func.some(fmt => fmt.id === id)) {
 			throw new Error(`Format function with id "${id}" already exists`);
 		}
 
-		this.options.format.func[id] = fn;
+		this.options.format.func.push({
+			id,
+			runAt,
+			func
+		})
 	}
 
 	public unregisterFormatFunc(id: string) {
-		if (!this.options.format.func[id]) {
+		if (!this.options.format.func.some(fmt => fmt.id === id)) {
 			throw new Error(`Format function with id "${id}" does not exist`);
 		}
 
-		delete this.options.format.func[id];
+		this.options.format.func = this.options.format.func.filter(fmt => fmt.id !== id);
 	}
 
 	public getFormatFuncs(): LoggerOptions['format']['func'] {

@@ -1,12 +1,10 @@
 import os from 'node:os';
-
-import strftime from "strftime";
 import { highlight } from 'cli-highlight';
-
+import strftime from "strftime";
 import { type LogLevel, logLevelToLogType } from "./enums";
 import type { OptionsManager } from "./optionsManager";
-import type { Style } from "./types";
-import { hexToAnsi, SUPPORTED_LANGUAGES } from "./utils";
+import type { FormatRunAt, Style } from "./types";
+import { SUPPORTED_LANGUAGES, hexToAnsi } from "./utils";
 
 
 const REGEX = {
@@ -184,10 +182,11 @@ export class Formatter {
 		return this;
 	}
 
-	public formatUserFunctions(): Formatter {
+	public formatUserFunctions(runAt: FormatRunAt): Formatter {
 		const funcs = this.options.getFormatFuncs();
-		for (const [key, func] of Object.entries(funcs)) {
-			this.res = func(this.res)
+		for (const fmt of funcs) {
+			if (fmt.runAt !== runAt) continue;
+			this.res = fmt.func(this.res)
 		}
 
 		return this;

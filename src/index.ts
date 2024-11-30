@@ -1,5 +1,4 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
-
 import { LogLevel } from "./enums";
 import { Formatter } from "./formatter";
 import { OptionsManager } from "./optionsManager";
@@ -7,11 +6,20 @@ import type { LoggerOptions } from "./types";
 
 export class Consol {
 	public options: OptionsManager;
+	private logQueue: [LogLevel, any[]][] = [];
 
 	constructor(options: Partial<LoggerOptions> = {}) {
 		this.options = new OptionsManager(options);
 	}
 
+	/**
+	 * Write a formatted log message to a file.
+	 *
+	 * @private
+	 * @param {LogLevel} level
+	 * @param {string} msg
+	 * @memberof Consol
+	 */
 	private writeToFile(level: LogLevel, msg: string) {
 		const path = new Formatter(this.options, this.options.getFormat('path'))
 			.formatDate()
@@ -28,8 +36,14 @@ export class Consol {
 		writeFileSync(path, `${msg}\n`, { flag: 'a' });
 	}
 
-	private logQueue: [LogLevel, any[]][] = [];
-	public logMessage(level: LogLevel, args: any[]) {
+	/**
+	 * Logs a message to the console.
+	 *
+	 * @param {LogLevel} level
+	 * @param {any[]} args
+	 * @memberof Consol
+	 */
+	public logMessage(level: LogLevel, ...args: any[]): void {
 		if (!this.options.shouldLog(level)) return;
 		if (this.options.isPaused()) {
 			this.logQueue.push([level, args]);
@@ -43,6 +57,17 @@ export class Consol {
 		console.log(reset + msg.terminal + reset);
 	}
 
+	/**
+	 * Formats a message for logging.
+	 *
+	 * @param {LogLevel} level
+	 * @param {...any[]} args
+	 * @return {{
+	 * 	terminal: string;
+	 * 	file: string;
+	 * }}
+	 * @memberof Consol
+	 */
 	public formatMessage(level: LogLevel, ...args: any[]): {
 		terminal: string;
 		file: string;
@@ -55,6 +80,7 @@ export class Consol {
 		}
 
 		result.terminal = fmt
+			.formatUserFunctions('before')
 			.formatDate()
 			.formatMessage(msg)
 			.formatRAM()
@@ -63,7 +89,7 @@ export class Consol {
 			.formatUsername()
 			.formatUptime()
 			.formatEnv()
-			.formatUserFunctions()
+			.formatUserFunctions('after')
 			.result();
 
 		// if writing to a file, we want to strip ansi codes and
@@ -77,8 +103,7 @@ export class Consol {
 				.result();
 		}
 
-		// now we can add the actual level content,
-		// styles & hex templates (they use ansi)
+		// now we can add the template values that use ansi
 		result.terminal = fmt
 			.formatLevelAnsi(level)
 			.formatStyles()
@@ -89,32 +114,32 @@ export class Consol {
 		return result;
 	}
 
-	public log(...args: any[]) {
+	public log(...args: any[]): void {
 		this.logMessage(LogLevel.Log, args);
 	}
 
-	public info(...args: any[]) {
+	public info(...args: any[]): void {
 		this.logMessage(LogLevel.Info, args);
 	}
 
-	public success(...args: any[]) {
+	public success(...args: any[]): void {
 		this.logMessage(LogLevel.Success, args);
 	}
 
-	public warning(...args: any[]) {
+	public warning(...args: any[]): void {
 		this.logMessage(LogLevel.Warning, args);
 	}
 
-	public error(...args: any[]) {
+	public error(...args: any[]): void {
 		this.logMessage(LogLevel.Error, args);
 	}
 
-	public fatal(...args: any[]) {
+	public fatal(...args: any[]): void {
 		this.logMessage(LogLevel.Fatal, args);
 		process.exit(1);
 	}
 
-	public debug(...args: any[]) {
+	public debug(...args: any[]): void {
 		this.logMessage(LogLevel.Debug, args);
 	}
 
@@ -126,10 +151,26 @@ export class Consol {
 		this.options.setEnabled(false);
 	}
 
+	/**
+	 * Pauses logging.
+	 *
+	 * All messages logged in the meantime will be queued,
+	 * and flushed once logging is resumed.
+	 *
+	 * @memberof Consol
+	 */
 	public pauseLogging(): void {
 		this.options.setPaused(true);
 	}
 
+	/**
+	 * Resumes logging if it was paused.
+	 *
+	 * NOTE: Upon resuming, all messages that were queued
+	 * while logging was paused will be logged.
+	 *
+	 * @memberof Consol
+	 */
 	public resumeLogging(): void {
 		this.options.setPaused(false);
 
@@ -144,5 +185,5 @@ export class Consol {
 export const consol = new Consol();
 export const createConsol = (options: Partial<LoggerOptions> = {}) => new Consol(options);
 
-export { LogLevel, logTypeToLogLevel, logLevelToLogType } from './enums';
-export { hexToAnsi, hexToRGB, styles, ANSI_ESCAPE, SUPPORTED_LANGUAGES } from './utils';
+export { LogLevel, logLevelToLogType, logTypeToLogLevel } from './enums';
+export { ANSI_ESCAPE, hexToAnsi, hexToRGB, styles, SUPPORTED_LANGUAGES } from './utils';
