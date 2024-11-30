@@ -10,9 +10,9 @@
 	"keywords": [
 		"console",
 		"terminal",
-		"logging",
 		"customizable",
 		"customisable",
+		"logging",
 		"logger",
 		"log"
 	],
@@ -25,10 +25,10 @@
 	"devDependencies": {
 		"@microsoft/api-extractor": "^7.48.0",
 		"@rslib/core": "^0.1.1",
-		"@types/bun": "latest",
+		"@types/bun": "^1.1.14",
 		"@types/lodash": "^4.17.13",
 		"@types/strftime": "^0.9.8",
-		"typescript": "latest"
+		"typescript": "^5.7.2"
 	},
 	"dependencies": {
 		"cli-highlight": "^2.1.11",

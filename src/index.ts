@@ -63,6 +63,7 @@ export class Consol {
 			.formatUsername()
 			.formatUptime()
 			.formatEnv()
+			.formatUserFunctions()
 			.result();
 
 		// if writing to a file, we want to strip ansi codes and

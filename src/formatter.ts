@@ -184,6 +184,15 @@ export class Formatter {
 		return this;
 	}
 
+	public formatUserFunctions(): Formatter {
+		const funcs = this.options.getFormatFuncs();
+		for (const [key, func] of Object.entries(funcs)) {
+			this.res = func(this.res)
+		}
+
+		return this;
+	}
+
 	public removeTemplates(): Formatter {
 		this.res = this.res.replaceAll(REGEX.REMOVE_TEMPLATES, "");
 		return this;

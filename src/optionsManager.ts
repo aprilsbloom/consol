@@ -3,7 +3,7 @@ import highlight, { fromJson as themeFromJson, DEFAULT_THEME } from "cli-highlig
 import type { Theme } from 'cli-highlight';
 
 import { LogLevel } from "./enums";
-import type { Format, LoggerOptions, LogType, StringifyFunc, Style } from "./types";
+import type { Format, FormatFunc, LoggerOptions, LogType, StringifyFunc, Style } from "./types";
 import { Formatter } from "./formatter";
 import { styles } from "./utils";
 
@@ -22,6 +22,7 @@ export class OptionsManager {
 		format: {
 			log: "!{date:%Y/%m/%d %H:%M:%S}! !{level}! !{message}!",
 			path: 'logs/!{date:%Y-%m-%d}!.log',
+			func: {},
 			level: {
 				log: { str: '!{hex:fg:#a8a8a8}!LOG' },
 				info: { str: '!{hex:fg:#a8a8a8}!INFO' },
@@ -147,6 +148,26 @@ export class OptionsManager {
 		this.stringify = this.stringify.bind(this);
 	}
 
+	public registerFormatFunc(id: string, fn: FormatFunc) {
+		if (this.options.format.func[id]) {
+			throw new Error(`Format function with id "${id}" already exists`);
+		}
+
+		this.options.format.func[id] = fn;
+	}
+
+	public unregisterFormatFunc(id: string) {
+		if (!this.options.format.func[id]) {
+			throw new Error(`Format function with id "${id}" does not exist`);
+		}
+
+		delete this.options.format.func[id];
+	}
+
+	public getFormatFuncs(): LoggerOptions['format']['func'] {
+		return this.options.format.func;
+	}
+
 	// Base
 	public setEnabled(enabled: boolean): void {
 		this.options.enabled = enabled;
@@ -214,11 +235,11 @@ export class OptionsManager {
 		return this.options.format;
 	}
 
-	public setFormat(format: Exclude<keyof LoggerOptions['format'], 'level'>, value: string) {
+	public setFormat(format: Exclude<keyof LoggerOptions['format'], 'level' | 'func'>, value: string) {
 		this.options.format[format] = value;
 	}
 
-	public getFormat(format: Exclude<keyof LoggerOptions['format'], 'level'>): string {
+	public getFormat(format: Exclude<keyof LoggerOptions['format'], 'level' | 'func'>): string {
 		return this.options.format[format] + styles.reset;
 	}
 
