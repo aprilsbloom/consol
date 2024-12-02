@@ -1,7 +1,7 @@
-import highlight, { fromJson as themeFromJson, DEFAULT_THEME } from "cli-highlight";
+import { DEFAULT_THEME, highlight, fromJson as themeFromJson } from "cli-highlight";
 import type { Theme } from 'cli-highlight';
 import { merge } from "lodash";
-import { LogLevel } from "./enums";
+import { LogLevel, logLevelToLogType } from "./enums";
 import { Formatter } from "./formatter";
 import type { Format, FormatFunc, FormatRunAt, LogType, LoggerOptions, StringifyFunc, Style } from "./types";
 import { styles } from "./utils";
@@ -305,7 +305,8 @@ export class OptionsManager {
 		}
 	}
 
-	public getLevelFormat(level: LogType): Format {
+	public getLevelFormat(level: LogType | LogLevel): Format {
+		if (typeof level === 'number') level = logLevelToLogType(level);
 		return this.options.format.level[level];
 	}
 

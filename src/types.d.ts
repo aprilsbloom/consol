@@ -1,5 +1,4 @@
 import type { Theme } from "cli-highlight";
-
 import type { LogLevel } from "./enums";
 
 export type StringifyFunc = (...args: any[]) => string;

@@ -1,7 +1,7 @@
 import os from 'node:os';
 import { highlight } from 'cli-highlight';
 import strftime from "strftime";
-import { type LogLevel, logLevelToLogType } from "./enums";
+import type { LogLevel } from "./enums";
 import type { OptionsManager } from "./optionsManager";
 import type { FormatRunAt, Style } from "./types";
 import { SUPPORTED_LANGUAGES, hexToAnsi } from "./utils";
@@ -49,7 +49,7 @@ export class Formatter {
 
 	public formatLevelAnsi(level: LogLevel): Formatter {
 		const lvlFmt =
-			this.options.getLevelFormat(logLevelToLogType(level)).ansi! +
+			this.options.getLevelFormat(level).ansi! +
 			this.options.getStyle("reset");
 
 		this.res = this.res.replaceAll("!{level}!", lvlFmt);
@@ -57,7 +57,7 @@ export class Formatter {
 	}
 
 	public formatLevelStr(level: LogLevel): Formatter {
-		const lvlFmt = this.options.getLevelFormat(logLevelToLogType(level)).str;
+		const lvlFmt = this.options.getLevelFormat(level).str;
 		this.res = this.res.replaceAll("!{level}!", lvlFmt);
 		return this;
 	}
