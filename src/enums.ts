@@ -20,6 +20,7 @@ export function logTypeToLogLevel(type: LogType): LogLevel {
 		case 'fatal': return LogLevel.Fatal;
 		case 'debug': return LogLevel.Debug;
 	}
+	return -999 as LogLevel;
 }
 
 export function logLevelToLogType(level: LogLevel): LogType {

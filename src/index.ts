@@ -185,6 +185,7 @@ export class Consol {
 export const consol = new Consol();
 export const createConsol = (options: Partial<LoggerOptions> = {}) => new Consol(options);
 
-export { LogLevel, logLevelToLogType, logTypeToLogLevel } from './enums';
-export { ANSI_ESCAPE, hexToAnsi, hexToRGB, styles, SUPPORTED_LANGUAGES } from './utils';
+export { LogLevel, logTypeToLogLevel, logLevelToLogType } from './enums';
+export { ANSI_ESCAPE, styles, hexToSimpleAnsiLUT, SUPPORTED_LANGUAGES } from './consts';
+export { hexToAnsi, hexToRGB } from './utils';
 

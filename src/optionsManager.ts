@@ -1,10 +1,10 @@
 import { DEFAULT_THEME, highlight, fromJson as themeFromJson } from "cli-highlight";
 import type { Theme } from 'cli-highlight';
 import { merge } from "lodash";
+import { styles } from "./consts";
 import { LogLevel, logLevelToLogType } from "./enums";
 import { Formatter } from "./formatter";
 import type { Format, FormatFunc, FormatRunAt, LogType, LoggerOptions, StringifyFunc, Style } from "./types";
-import { styles } from "./utils";
 
 export class OptionsManager {
 	private options: LoggerOptions = {
