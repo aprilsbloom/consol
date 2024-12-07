@@ -6,7 +6,7 @@ import type { LoggerOptions } from "./types";
 
 export class Consol {
 	public options: OptionsManager;
-	private logQueue: [LogLevel, any[]][] = [];
+	private logQueue: [LogLevel, ...any[]][] = [];
 
 	constructor(options: Partial<LoggerOptions> = {}) {
 		this.options = new OptionsManager(options);
@@ -46,7 +46,7 @@ export class Consol {
 	public logMessage(level: LogLevel, ...args: any[]): void {
 		if (!this.options.shouldLog(level)) return;
 		if (this.options.isPaused()) {
-			this.logQueue.push([level, args]);
+			this.logQueue.push([level, ...args]);
 			return;
 		}
 
@@ -187,3 +187,4 @@ export const createConsol = (options: Partial<LoggerOptions> = {}) => new Consol
 
 export { LogLevel, logLevelToLogType, logTypeToLogLevel } from './enums';
 export { ANSI_ESCAPE, hexToAnsi, hexToRGB, styles, SUPPORTED_LANGUAGES } from './utils';
+

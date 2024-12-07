@@ -6,7 +6,6 @@ import type { OptionsManager } from "./optionsManager";
 import type { FormatRunAt, Style } from "./types";
 import { SUPPORTED_LANGUAGES, hexToAnsi } from "./utils";
 
-
 const REGEX = {
 	DATE: /!{date:(.*?%[\s\S])}!/g,
 	STYLES: /!{styles:([a-z]+)}!/g,

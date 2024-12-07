@@ -125,6 +125,7 @@ export class OptionsManager {
 
 	public stringify(...args: any[]): string {
 		return args
+			.flat()
 			.map(item => {
 				if (typeof item === 'string') return item;
 
