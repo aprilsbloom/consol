@@ -17,23 +17,39 @@
 		"log"
 	],
 	"type": "module",
-	"module": "index.js",
+	"module": "./esm/index.js",
+	"types": "./esm/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./esm/index.js",
+			"types": "./esm/index.d.ts"
+		}
+	},
+	"files": [
+		"./esm/index.js",
+		"./esm/index.d.ts",
+		"./cjs/index.cjs",
+		"./cjs/index.d.cts"
+	],
 	"scripts": {
 		"start": "bun src/index.ts",
-		"build": "rslib build"
+		"build": "rslib build",
+		"build:prod": "cross-env NODE_ENV=production bun run build",
+		"build:dev": "cross-env NODE_ENV=development bun run build"
 	},
 	"devDependencies": {
-		"@microsoft/api-extractor": "^7.48.0",
-		"@rslib/core": "^0.1.1",
-		"@types/bun": "^1.1.14",
-		"@types/lodash": "^4.17.13",
-		"@types/strftime": "^0.9.8",
-		"typescript": "^5.7.2"
+		"@microsoft/api-extractor": "7.48.1",
+		"@rslib/core": "0.3.0",
+		"@types/bun": "1.1.15",
+		"@types/lodash": "4.17.14",
+		"@types/strftime": "0.9.8",
+		"cross-env": "7.0.3",
+		"typescript": "5.7.2"
 	},
 	"dependencies": {
-		"cli-highlight": "^2.1.11",
-		"lodash": "^4.17.21",
-		"strftime": "^0.10.3",
-		"supports-color": "^9.4.0"
+		"cli-highlight": "2.1.11",
+		"lodash": "4.17.21",
+		"strftime": "0.10.3",
+		"supports-color": "^10.0.0"
 	}
 }
