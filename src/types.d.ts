@@ -26,6 +26,7 @@ export interface LoggerOptions {
 	}
 }
 
+export type RunAt = 'before' | 'after';
 export interface FormatFunction {
 	id: string;
 	runAt: 'before' | 'after';

@@ -4,7 +4,7 @@ import strftime from "strftime";
 import { SUPPORTED_LANGUAGES } from "./consts";
 import type { LogLevel } from "./enums";
 import type { Options } from "./options";
-import type { FormatRunAt, Style } from "./types";
+import type { RunAt, Style } from "./types";
 import { hexToAnsi } from "./utils";
 
 const REGEX = {
@@ -182,7 +182,7 @@ export class Formatter {
 		return this;
 	}
 
-	public formatUserFunctions(runAt: FormatRunAt): Formatter {
+	public formatUserFunctions(runAt: RunAt): Formatter {
 		const funcs = this.options.getFormatFuncs();
 		for (const fmt of funcs) {
 			if (fmt.runAt !== runAt) continue;
