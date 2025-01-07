@@ -1,15 +1,15 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { LogLevel } from "./enums";
 import { Formatter } from "./formatter";
-import { OptionsManager } from "./optionsManager";
+import { Options } from "./options";
 import type { LoggerOptions } from "./types";
 
 export class Consol {
-	public options: OptionsManager;
+	public options: Options;
 	private logQueue: [LogLevel, ...any[]][] = [];
 
 	constructor(options: Partial<LoggerOptions> = {}) {
-		this.options = new OptionsManager(options);
+		this.options = new Options(options);
 	}
 
 	/**

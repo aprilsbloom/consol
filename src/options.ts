@@ -4,9 +4,9 @@ import { merge } from "lodash";
 import { styles } from "./consts";
 import { LogLevel, logLevelToLogType } from "./enums";
 import { Formatter } from "./formatter";
-import type { Format, FormatFunc, FormatRunAt, LogType, LoggerOptions, StringifyFunc, Style } from "./types";
+import type { FormatFunction, FormatResult, LogType, LoggerOptions, StringifyFunc, Style } from "./types";
 
-export class OptionsManager {
+export class Options {
 	private options: LoggerOptions = {
 		enabled: true,
 		paused: false,
@@ -21,7 +21,7 @@ export class OptionsManager {
 		format: {
 			log: "!{date:%Y/%m/%d %H:%M:%S}! !{level}! !{message}!",
 			path: 'logs/!{date:%Y-%m-%d}!.log',
-			func: [],
+			functions: [],
 			level: {
 				log: { str: '!{hex:fg:#a8a8a8}!LOG' },
 				info: { str: '!{hex:fg:#a8a8a8}!INFO' },
@@ -36,6 +36,9 @@ export class OptionsManager {
 
 	constructor(options: Partial<LoggerOptions> = {}) {
 		this.set(options);
+
+		// save orig functions
+		this.origStringify = this.stringify.bind(this);
 	}
 
 	// Options utilities
@@ -60,48 +63,6 @@ export class OptionsManager {
 		return this.options;
 	}
 
-	/**
-	 * Set an individual key's value.
-	 *
-	 * @param {string} key
-	 * @param {any} value
-	 * @memberof OptionsManager
-	 */
-	public setKey(key: string, value: any): void {
-		const keys = key.split('.');
-		let result: any = this.options;
-
-		for (let i = 0; i < keys.length - 1; i++) {
-			if (!result[keys[i]] || typeof result[keys[i]] !== 'object') {
-				result[keys[i]] = {};
-			}
-
-			result = result[keys[i]];
-		}
-
-		result[keys[keys.length - 1]] = value;
-	}
-
-	/**
-	 * Get an individual key's value.
-	 *
-	 * @param {string} key
-	 * @return {*}  {*}
-	 * @memberof OptionsManager
-	 */
-	public getKey(key: string): any {
-		const keys = key.split('.');
-		if (keys.length === 1) return (this.options as any)[key];
-
-		let result = this.options;
-		for (const k of keys) {
-			if (!result || typeof result !== 'object') return undefined;
-			result = (result as any)[k];
-		}
-
-		return result;
-	}
-
 	// Format utilities
 	public getThemes(): LoggerOptions['stringify']['themes'] {
 		return this.options.stringify.themes;
@@ -123,6 +84,7 @@ export class OptionsManager {
 		this.options.stringify.themes[name] = themeFromJson(theme);
 	}
 
+	public origStringify: StringifyFunc;
 	public stringify(...args: any[]): string {
 		return args
 			.flat()
@@ -174,28 +136,28 @@ export class OptionsManager {
 		this.stringify = this.stringify.bind(this);
 	}
 
-	public registerFormatFunc(id: string, runAt: FormatRunAt, func: FormatFunc) {
-		if (this.options.format.func.some(fmt => fmt.id === id)) {
-			throw new Error(`Format function with id "${id}" already exists`);
+	public resetStringifyFunc() {
+		this.stringify = this.origStringify;
+	}
+
+	public registerFormatFunc(opts: FormatFunction) {
+		if (this.options.format.functions.some(fmt => fmt.id === opts.id)) {
+			throw new Error(`Format function with id "${opts.id}" already exists`);
 		}
 
-		this.options.format.func.push({
-			id,
-			runAt,
-			func
-		})
+		this.options.format.functions.push(opts);
 	}
 
 	public unregisterFormatFunc(id: string) {
-		if (!this.options.format.func.some(fmt => fmt.id === id)) {
+		if (!this.options.format.functions.some(fmt => fmt.id === id)) {
 			throw new Error(`Format function with id "${id}" does not exist`);
 		}
 
-		this.options.format.func = this.options.format.func.filter(fmt => fmt.id !== id);
+		this.options.format.functions = this.options.format.functions.filter(fmt => fmt.id !== id);
 	}
 
-	public getFormatFuncs(): LoggerOptions['format']['func'] {
-		return this.options.format.func;
+	public getFormatFuncs(): LoggerOptions['format']['functions'] {
+		return this.options.format.functions;
 	}
 
 	// Base
@@ -265,11 +227,11 @@ export class OptionsManager {
 		return this.options.format;
 	}
 
-	public setFormat(format: Exclude<keyof LoggerOptions['format'], 'level' | 'func'>, value: string) {
+	public setFormat(format: Exclude<keyof LoggerOptions['format'], 'level' | 'functions'>, value: string) {
 		this.options.format[format] = value;
 	}
 
-	public getFormat(format: Exclude<keyof LoggerOptions['format'], 'level' | 'func'>): string {
+	public getFormat(format: Exclude<keyof LoggerOptions['format'], 'level' | 'functions'>): string {
 		return this.options.format[format] + styles.reset;
 	}
 
@@ -284,7 +246,7 @@ export class OptionsManager {
 	// Level formats
 	public setLevelFormats(levels: Partial<LoggerOptions['format']['level']>) {
 		this.options.format.level = merge(this.options.format.level, levels);
-		for (const [level, format] of Object.entries(levels) as [LogType, Format][]) {
+		for (const [level, format] of Object.entries(levels) as [LogType, FormatResult][]) {
 			this.setLevelFormat(level, format.str);
 		}
 	}
@@ -306,7 +268,7 @@ export class OptionsManager {
 		}
 	}
 
-	public getLevelFormat(level: LogType | LogLevel): Format {
+	public getLevelFormat(level: LogType | LogLevel): FormatResult {
 		if (typeof level === 'number') level = logLevelToLogType(level);
 		return this.options.format.level[level];
 	}
