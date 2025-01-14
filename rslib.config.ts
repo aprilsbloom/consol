@@ -11,7 +11,6 @@ const sharedLib: LibConfig = {
 		autoExtension: true,
 	},
 	output: {
-
 		minify: {
 			js: prod,
 			jsOptions: {
