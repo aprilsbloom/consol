@@ -189,3 +189,4 @@ export { LogLevel, logTypeToLogLevel, logLevelToLogType } from './enums';
 export { ANSI_ESCAPE, styles, hexToSimpleAnsiLUT, SUPPORTED_LANGUAGES } from './consts';
 export { hexToAnsi, hexToRGB } from './utils';
 
+export { default as chalk } from 'chalk';
