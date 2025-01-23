@@ -7,10 +7,10 @@ export class Consol {
 	public options: Options;
 
 	constructor(opts: Partial<ConsolOptions> = {}) {
-		this.options = new Options(opts);
+		this.options = new Options(this, opts);
 	}
 
-	private _log(level: LogLevel, args: LogArgs): string {
+	public custLog(level: LogLevel, args: LogArgs): string {
 		// add log args to queue if paused
 		if (this.options.isPaused()) {
 			this.options.addLogToQueue(level, args);
@@ -27,31 +27,31 @@ export class Consol {
 	}
 
 	public log(...args: LogArgs): string {
-		return this._log(LogLevel.Log, args);
+		return this.custLog(LogLevel.Log, args);
 	}
 
 	public info(...args: LogArgs): string {
-		return this._log(LogLevel.Info, args);
+		return this.custLog(LogLevel.Info, args);
 	}
 
 	public success(...args: LogArgs): string {
-		return this._log(LogLevel.Success, args);
+		return this.custLog(LogLevel.Success, args);
 	}
 
 	public warning(...args: LogArgs): string {
-		return this._log(LogLevel.Warning, args);
+		return this.custLog(LogLevel.Warning, args);
 	}
 
 	public error(...args: LogArgs): string {
-		return this._log(LogLevel.Error, args);
+		return this.custLog(LogLevel.Error, args);
 	}
 
 	public fatal(...args: LogArgs): string {
-		return this._log(LogLevel.Fatal, args);
+		return this.custLog(LogLevel.Fatal, args);
 	}
 
 	public debug(...args: LogArgs): string {
-		return this._log(LogLevel.Debug, args);
+		return this.custLog(LogLevel.Debug, args);
 	}
 
 	public enable() {

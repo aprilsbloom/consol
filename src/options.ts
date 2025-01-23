@@ -2,9 +2,11 @@ import type { Theme } from "cli-highlight";
 import { merge } from "lodash";
 import { LogLevel } from "./types";
 import type { ConsolOptions, FormatOptions, LevelFormat, LevelFormatOptions, LogArgs, LogQueue, StringifyOptions, ThemeOptions } from "./types";
+import type { Consol } from ".";
 
 
 export class Options {
+	private consol: Consol;
 	public opts: ConsolOptions = {
 		enabled: true,
 		paused: false,
@@ -31,7 +33,11 @@ export class Options {
 		},
 	};
 
-	constructor(opts: Partial<ConsolOptions> = {}) {
+	constructor(
+		consol: Consol,
+		opts: Partial<ConsolOptions> = {}
+	) {
+		this.consol = consol;
 		this.set(opts);
 	}
 
@@ -62,6 +68,7 @@ export class Options {
 
 	public resume(): void {
 		this.opts.paused = false;
+		this.flushLogQueue();
 	}
 
 	public isPaused(): boolean {
@@ -69,7 +76,7 @@ export class Options {
 	}
 
 	public canLog(level?: LogLevel): boolean {
-		if (!this.opts.enabled) return false;
+		if (!this.opts.enabled || this.opts.paused) return false;
 		return level ? level <= this.opts.level : true;
 	}
 
@@ -89,6 +96,14 @@ export class Options {
 
 	public getLogQueue(): LogQueue {
 		return this.logQueue;
+	}
+
+	public flushLogQueue(): void {
+		for (const [level, args] of this.logQueue) {
+			this.consol.custLog(level, args);
+		}
+
+		this.clearLogQueue();
 	}
 
 	public clearLogQueue(): void {
