@@ -1,7 +1,7 @@
 import type { Theme } from "cli-highlight";
 import { merge } from "lodash";
 import { LogLevel } from "./types";
-import type { ConsolOptions, FormatOptions, LevelFormat, LevelFormatOptions, StringifyOptions, ThemeOptions } from "./types";
+import type { ConsolOptions, FormatOptions, LevelFormat, LevelFormatOptions, LogArgs, LogQueue, StringifyOptions, ThemeOptions } from "./types";
 
 
 export class Options {
@@ -52,6 +52,10 @@ export class Options {
 		this.opts.enabled = false;
 	}
 
+	public isEnabled(): boolean {
+		return this.opts.enabled;
+	}
+
 	public pause(): void {
 		this.opts.paused = true;
 	}
@@ -60,8 +64,13 @@ export class Options {
 		this.opts.paused = false;
 	}
 
-	public canLog(): boolean {
-		return this.opts.enabled && !this.opts.paused;
+	public isPaused(): boolean {
+		return this.opts.paused;
+	}
+
+	public canLog(level?: LogLevel): boolean {
+		if (!this.opts.enabled) return false;
+		return level ? level <= this.opts.level : true;
 	}
 
 	public setLogLevel(level: LogLevel): void {
@@ -70,6 +79,20 @@ export class Options {
 
 	public getLogLevel(): LogLevel {
 		return this.opts.level;
+	}
+
+	// Log queue
+	private logQueue: LogQueue = [];
+	public addLogToQueue(level: LogLevel, args: LogArgs): void {
+		this.logQueue.push([level, args]);
+	}
+
+	public getLogQueue(): LogQueue {
+		return this.logQueue;
+	}
+
+	public clearLogQueue(): void {
+		this.logQueue = [];
 	}
 
 	// Formats

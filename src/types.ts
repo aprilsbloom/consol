@@ -1,5 +1,8 @@
 import type { Theme } from 'cli-highlight';
 
+export type LogArgs = unknown[];
+export type LogQueue = [LogLevel, LogArgs][];
+
 // Options
 export interface ConsolOptions {
 	enabled: boolean;
