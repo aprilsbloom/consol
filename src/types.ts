@@ -5,13 +5,32 @@ export interface ConsolOptions {
 	enabled: boolean;
 	paused: boolean;
 	level: LogLevel;
+
+	formats: FormatOptions;
+	levelFormats: LevelFormatOptions;
+
 	stringify: StringifyOptions;
 }
 
+export interface FormatOptions {
+	log: string;
+	path: string;
+}
+
+export type LevelFormatOptions = Record<Exclude<LogType, 'none'>, LevelFormat>;
+export interface LevelFormat {
+	str: string;
+	ansi?: string;
+}
+
+export type ThemeOptions = Record<string, Theme>;
 export interface StringifyOptions {
 	indent: number;
-	themes: Record<string, Theme>;
+	themes: ThemeOptions;
+
 }
+
+export type StringifyFunc = (...args: unknown[]) => string;
 
 // Log level
 export enum LogLevel {
