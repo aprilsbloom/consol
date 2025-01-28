@@ -30,7 +30,6 @@ export type ThemeOptions = Record<string, Theme>;
 export interface StringifyOptions {
 	indent: number;
 	themes: ThemeOptions;
-
 }
 
 export type StringifyFunc = (...args: unknown[]) => string;
@@ -44,14 +43,20 @@ export enum LogLevel {
 	Error,
 	Fatal,
 	Debug,
-	None = -999
+	None = -999,
 }
 
-type EnumToLowercase<T> = keyof T extends infer K ? Lowercase<K & string> : never;
+type EnumToLowercase<T> = keyof T extends infer K
+	? Lowercase<K & string>
+	: never;
 export type LogType = EnumToLowercase<typeof LogLevel>;
 
 export function logTypeToLogLevel(type: LogType): LogLevel {
-	return LogLevel[type.charAt(0).toUpperCase() + type.slice(1) as keyof typeof LogLevel] ?? LogLevel.None;
+	return (
+		LogLevel[
+			(type.charAt(0).toUpperCase() + type.slice(1)) as keyof typeof LogLevel
+		] ?? LogLevel.None
+	);
 }
 
 export function logLevelToLogType(level: LogLevel): LogType {

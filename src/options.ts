@@ -1,9 +1,17 @@
-import type { Theme } from "cli-highlight";
-import { merge } from "lodash";
-import { LogLevel } from "./types";
-import type { ConsolOptions, FormatOptions, LevelFormat, LevelFormatOptions, LogArgs, LogQueue, StringifyOptions, ThemeOptions } from "./types";
-import type { Consol } from ".";
-
+import type { Theme } from 'cli-highlight';
+import { merge } from 'lodash';
+import { LogLevel } from './types';
+import type {
+	ConsolOptions,
+	FormatOptions,
+	LevelFormat,
+	LevelFormatOptions,
+	LogArgs,
+	LogQueue,
+	StringifyOptions,
+	ThemeOptions,
+} from './types';
+import type { Consol } from '.';
 
 export class Options {
 	private consol: Consol;
@@ -13,18 +21,18 @@ export class Options {
 		level: LogLevel.Fatal,
 
 		formats: {
-			log: "!{date:%Y/%m/%d %H:%M:%S}! !{level}! !{message}!",
-			path: "logs/!{date:%Y-%m-%d}!",
+			log: '!{date:%Y/%m/%d %H:%M:%S}! !{level}! !{message}!',
+			path: 'logs/!{date:%Y-%m-%d}!',
 		},
 
 		levelFormats: {
-			log: { str: "!{hex:fg:#a8a8a8}!" },
-			info: { str: "!{hex:fg:#a8a8a8}!" },
-			success: { str: "!{hex:fg:#79ef77}!" },
-			warning: { str: "!{hex:fg:#efe777}!" },
-			error: { str: "!{hex:fg:#ef8d77}!" },
-			fatal: { str: "!{hex:fg:#ef8d77}!" },
-			debug: { str: "!{hex:fg:#a8a8a8}!" }
+			log: { str: '!{hex:fg:#a8a8a8}!' },
+			info: { str: '!{hex:fg:#a8a8a8}!' },
+			success: { str: '!{hex:fg:#79ef77}!' },
+			warning: { str: '!{hex:fg:#efe777}!' },
+			error: { str: '!{hex:fg:#ef8d77}!' },
+			fatal: { str: '!{hex:fg:#ef8d77}!' },
+			debug: { str: '!{hex:fg:#a8a8a8}!' },
 		},
 
 		stringify: {
@@ -33,10 +41,7 @@ export class Options {
 		},
 	};
 
-	constructor(
-		consol: Consol,
-		opts: Partial<ConsolOptions> = {}
-	) {
+	constructor(consol: Consol, opts: Partial<ConsolOptions> = {}) {
 		this.consol = consol;
 		this.set(opts);
 	}
@@ -140,7 +145,10 @@ export class Options {
 		this.opts.levelFormats = merge(this.opts.levelFormats, formats);
 	}
 
-	public setLevelFormat(level: keyof LevelFormatOptions, format: LevelFormat): void {
+	public setLevelFormat(
+		level: keyof LevelFormatOptions,
+		format: LevelFormat,
+	): void {
 		this.opts.levelFormats[level] = format;
 	}
 

@@ -1,7 +1,6 @@
-import type { ConsolOptions, LogArgs } from "./types";
-import { LogLevel } from "./types";
-import { Options } from "./options";
-
+import type { ConsolOptions, LogArgs } from './types';
+import { LogLevel } from './types';
+import { Options } from './options';
 
 export class Consol {
 	public options: Options;
@@ -14,16 +13,15 @@ export class Consol {
 		// add log args to queue if paused
 		if (this.options.isPaused()) {
 			this.options.addLogToQueue(level, args);
-			return "";
+			return '';
 		}
 
 		// return nothing if logging is disabled / level is below threshold
-		if (!this.options.canLog(level)) return "";
+		if (!this.options.canLog(level)) return '';
 
 		// stringify args
 
-
-		return "";
+		return '';
 	}
 
 	public log(...args: LogArgs): string {

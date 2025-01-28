@@ -1,5 +1,5 @@
-import strftime from "strftime";
-import type { Options } from "./options";
+import strftime from 'strftime';
+import type { Options } from './options';
 
 export default class Formatter {
 	private options: Options;
@@ -13,10 +13,7 @@ export default class Formatter {
 		style: /!{style:(.+?)}!/g,
 	};
 
-	constructor(
-		opts: Options,
-		format: string,
-	) {
+	constructor(opts: Options, format: string) {
 		this.options = opts;
 		this.res = format;
 	}
@@ -42,7 +39,7 @@ export default class Formatter {
 
 	public formatEnv(): Formatter {
 		this.res = this.res.replaceAll(this.regex.env, (_, env: string) => {
-			return process.env[env] || "";
+			return process.env[env] || '';
 		});
 		return this;
 	}
