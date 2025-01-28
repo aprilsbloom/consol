@@ -100,7 +100,7 @@ export class Options {
 
 	public flushLogQueue(): void {
 		for (const [level, args] of this.logQueue) {
-			this.consol.custLog(level, args);
+			this.consol.customLog(level, args);
 		}
 
 		this.clearLogQueue();

@@ -10,7 +10,7 @@ export class Consol {
 		this.options = new Options(this, opts);
 	}
 
-	public custLog(level: LogLevel, args: LogArgs): string {
+	public customLog(level: LogLevel, args: LogArgs): string {
 		// add log args to queue if paused
 		if (this.options.isPaused()) {
 			this.options.addLogToQueue(level, args);
@@ -27,46 +27,46 @@ export class Consol {
 	}
 
 	public log(...args: LogArgs): string {
-		return this.custLog(LogLevel.Log, args);
+		return this.customLog(LogLevel.Log, args);
 	}
 
 	public info(...args: LogArgs): string {
-		return this.custLog(LogLevel.Info, args);
+		return this.customLog(LogLevel.Info, args);
 	}
 
 	public success(...args: LogArgs): string {
-		return this.custLog(LogLevel.Success, args);
+		return this.customLog(LogLevel.Success, args);
 	}
 
 	public warning(...args: LogArgs): string {
-		return this.custLog(LogLevel.Warning, args);
+		return this.customLog(LogLevel.Warning, args);
 	}
 
 	public error(...args: LogArgs): string {
-		return this.custLog(LogLevel.Error, args);
+		return this.customLog(LogLevel.Error, args);
 	}
 
 	public fatal(...args: LogArgs): string {
-		return this.custLog(LogLevel.Fatal, args);
+		return this.customLog(LogLevel.Fatal, args);
 	}
 
 	public debug(...args: LogArgs): string {
-		return this.custLog(LogLevel.Debug, args);
+		return this.customLog(LogLevel.Debug, args);
 	}
 
-	public enable() {
+	public enable(): void {
 		this.options.enable();
 	}
 
-	public disable() {
+	public disable(): void {
 		this.options.disable();
 	}
 
-	public pause() {
+	public pause(): void {
 		this.options.pause();
 	}
 
-	public resume() {
+	public resume(): void {
 		this.options.resume();
 	}
 }
