@@ -1,7 +1,9 @@
-import type { Theme } from "cli-highlight";
-import type { LogLevel } from "./enums";
+import type { Theme } from 'cli-highlight';
+import type { LogLevel } from './enums';
 
-type EnumToLowercase<T> = keyof T extends infer K ? Lowercase<K & string> : never;
+type EnumToLowercase<T> = keyof T extends infer K
+	? Lowercase<K & string>
+	: never;
 
 export type StringifyFunc = (...args: any[]) => string;
 export type LogType = EnumToLowercase<typeof LogLevel>;
@@ -16,14 +18,14 @@ export interface LoggerOptions {
 	stringify: {
 		jsonIndent: number;
 		themes: Record<string, Theme>;
-	}
+	};
 
 	format: {
 		log: string;
 		path: string;
 		functions: FormatFunction[];
 		level: Record<LogType, FormatResult>;
-	}
+	};
 }
 
 export type RunAt = 'before' | 'after';

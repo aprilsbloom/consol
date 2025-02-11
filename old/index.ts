@@ -1,8 +1,8 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { LogLevel } from "./enums";
-import { Formatter } from "./formatter";
-import { Options } from "./options";
-import type { LoggerOptions } from "./types";
+import { LogLevel } from './enums';
+import { Formatter } from './formatter';
+import { Options } from './options';
+import type { LoggerOptions } from './types';
 
 export class Consol {
 	public options: Options;
@@ -28,9 +28,9 @@ export class Consol {
 			.removeAnsi()
 			.result();
 
-		const dir = path.includes('/') ?
-			path.split('/').slice(0, -1).join('/').trim():
-			'';
+		const dir = path.includes('/')
+			? path.split('/').slice(0, -1).join('/').trim()
+			: '';
 
 		if (dir) mkdirSync(dir, { recursive: true });
 		writeFileSync(path, `${msg}\n`, { flag: 'a' });
@@ -68,7 +68,10 @@ export class Consol {
 	 * }}
 	 * @memberof Consol
 	 */
-	public formatMessage(level: LogLevel, ...args: any[]): {
+	public formatMessage(
+		level: LogLevel,
+		...args: any[]
+	): {
 		terminal: string;
 		file: string;
 	} {
@@ -76,8 +79,8 @@ export class Consol {
 		const fmt = new Formatter(this.options, this.options.getFormat('log'));
 		const result = {
 			terminal: '',
-			file: ''
-		}
+			file: '',
+		};
 
 		result.terminal = fmt
 			.formatUserFunctions('before')
@@ -183,10 +186,16 @@ export class Consol {
 }
 
 export const consol = new Consol();
-export const createConsol = (options: Partial<LoggerOptions> = {}) => new Consol(options);
+export const createConsol = (options: Partial<LoggerOptions> = {}) =>
+	new Consol(options);
 
 export { LogLevel, logTypeToLogLevel, logLevelToLogType } from './enums';
-export { ANSI_ESCAPE, styles, hexToSimpleAnsiLUT, SUPPORTED_LANGUAGES } from './consts';
+export {
+	ANSI_ESCAPE,
+	styles,
+	hexToSimpleAnsiLUT,
+	SUPPORTED_LANGUAGES,
+} from './consts';
 export { hexToAnsi, hexToRGB } from './utils';
 
 export { default as chalk } from 'chalk';

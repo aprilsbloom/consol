@@ -19,10 +19,10 @@ const sharedLib: LibConfig = {
 					mangle: prod,
 					minify: prod,
 					format: {
-						comments: prod ? false : 'all'
-					}
-				}
-			}
+						comments: prod ? false : 'all',
+					},
+				},
+			},
 		},
 	},
 };
@@ -45,14 +45,14 @@ export default defineConfig({
 			format: 'esm',
 			output: {
 				distPath: { root: `${basePath}/esm` },
-			}
+			},
 		},
 		{
 			...sharedLib,
 			format: 'cjs',
 			output: {
 				distPath: { root: `${basePath}/cjs` },
-			}
+			},
 		},
-	]
+	],
 });

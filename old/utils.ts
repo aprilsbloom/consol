@@ -1,12 +1,17 @@
 import supportsColor from 'supports-color';
 import { ANSI_ESCAPE, hexToSimpleAnsiLUT, styles } from './consts';
 
-export const hexToRGBLUT: Record<string, [red: number, green: number, blue: number]> = {}
+export const hexToRGBLUT: Record<
+	string,
+	[red: number, green: number, blue: number]
+> = {};
 for (const hex of Object.keys(hexToSimpleAnsiLUT)) {
 	hexToRGBLUT[hex] = hexToRGB(hex);
 }
 
-export function findNearestHex(hex: string | [red: number, green: number, blue: number]): string {
+export function findNearestHex(
+	hex: string | [red: number, green: number, blue: number],
+): string {
 	// convert hex to rgb if necessary
 	let r: number;
 	let g: number;
@@ -32,14 +37,14 @@ export function findNearestHex(hex: string | [red: number, green: number, blue: 
 	}
 
 	// find the closest color
-  let closest: string = '';
-  let closestSimilarity = Number.NEGATIVE_INFINITY;
-  for (const [hex, similarity] of Object.entries(similarities)) {
-    if (similarity > closestSimilarity) {
-      closest = hex;
-      closestSimilarity = similarity;
-    }
-  }
+	let closest: string = '';
+	let closestSimilarity = Number.NEGATIVE_INFINITY;
+	for (const [hex, similarity] of Object.entries(similarities)) {
+		if (similarity > closestSimilarity) {
+			closest = hex;
+			closestSimilarity = similarity;
+		}
+	}
 
 	return closest;
 }
@@ -78,7 +83,11 @@ export function hexToRGB(hex: string): [number, number, number] {
 export function validateHex(hex: string): string {
 	hex = hex.toUpperCase();
 	if (hex.startsWith('#')) hex = hex.slice(1);
-	if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+	if (hex.length === 3)
+		hex = hex
+			.split('')
+			.map((c) => c + c)
+			.join('');
 	if (!/^[0-9A-F]{6}$/i.test(hex)) throw new Error('Invalid hex string!');
 	return hex;
 }

@@ -1,10 +1,21 @@
-import { DEFAULT_THEME, highlight, fromJson as themeFromJson } from "cli-highlight";
+import {
+	DEFAULT_THEME,
+	highlight,
+	fromJson as themeFromJson,
+} from 'cli-highlight';
 import type { Theme } from 'cli-highlight';
-import { merge } from "lodash";
-import { styles } from "./consts";
-import { LogLevel, logLevelToLogType } from "./enums";
-import { Formatter } from "./formatter";
-import type { FormatFunction, FormatResult, LogType, LoggerOptions, StringifyFunc, Style } from "./types";
+import { merge } from 'lodash';
+import { styles } from './consts';
+import { LogLevel, logLevelToLogType } from './enums';
+import { Formatter } from './formatter';
+import type {
+	FormatFunction,
+	FormatResult,
+	LogType,
+	LoggerOptions,
+	StringifyFunc,
+	Style,
+} from './types';
 
 export class Options {
 	private options: LoggerOptions = {
@@ -19,7 +30,7 @@ export class Options {
 		},
 
 		format: {
-			log: "!{date:%Y/%m/%d %H:%M:%S}! !{level}! !{message}!",
+			log: '!{date:%Y/%m/%d %H:%M:%S}! !{level}! !{message}!',
 			path: 'logs/!{date:%Y-%m-%d}!.log',
 			functions: [],
 			level: {
@@ -31,7 +42,7 @@ export class Options {
 				fatal: { str: '!{hex:fg:#ef8d77}!FATAL' },
 				debug: { str: '!{hex:fg:#a8a8a8}!DEBUG' },
 			},
-		}
+		},
 	};
 
 	constructor(options: Partial<LoggerOptions> = {}) {
@@ -73,7 +84,10 @@ export class Options {
 	}
 
 	public setThemes(themes: LoggerOptions['stringify']['themes']) {
-		this.options.stringify.themes = merge(this.options.stringify.themes, themes);
+		this.options.stringify.themes = merge(
+			this.options.stringify.themes,
+			themes,
+		);
 
 		for (const [name, theme] of Object.entries(themes)) {
 			this.setTheme(name, theme);
@@ -88,14 +102,17 @@ export class Options {
 	public stringify(...args: any[]): string {
 		return args
 			.flat()
-			.map(item => {
+			.map((item) => {
 				if (typeof item === 'string') return item;
 
 				// highlihgt functions if passed in
 				if (typeof item === 'function') {
 					const func = item.toString();
 					try {
-						return highlight(func, { language: 'javascript', theme: this.getTheme('javascript') });
+						return highlight(func, {
+							language: 'javascript',
+							theme: this.getTheme('javascript'),
+						});
 					} catch {
 						return func;
 					}
@@ -111,11 +128,14 @@ export class Options {
 								if (typeof value === 'bigint') return `${value.toString()}n`;
 								return value;
 							},
-							this.options.stringify.jsonIndent
+							this.options.stringify.jsonIndent,
 						);
 
 						try {
-							return highlight(val, { language: 'json', theme: this.getTheme('json') });
+							return highlight(val, {
+								language: 'json',
+								theme: this.getTheme('json'),
+							});
 						} catch {
 							return val;
 						}
@@ -141,7 +161,7 @@ export class Options {
 	}
 
 	public registerFormatFunc(opts: FormatFunction) {
-		if (this.options.format.functions.some(fmt => fmt.id === opts.id)) {
+		if (this.options.format.functions.some((fmt) => fmt.id === opts.id)) {
 			throw new Error(`Format function with id "${opts.id}" already exists`);
 		}
 
@@ -149,11 +169,13 @@ export class Options {
 	}
 
 	public unregisterFormatFunc(id: string) {
-		if (!this.options.format.functions.some(fmt => fmt.id === id)) {
+		if (!this.options.format.functions.some((fmt) => fmt.id === id)) {
 			throw new Error(`Format function with id "${id}" does not exist`);
 		}
 
-		this.options.format.functions = this.options.format.functions.filter(fmt => fmt.id !== id);
+		this.options.format.functions = this.options.format.functions.filter(
+			(fmt) => fmt.id !== id,
+		);
 	}
 
 	public getFormatFuncs(): LoggerOptions['format']['functions'] {
@@ -227,11 +249,16 @@ export class Options {
 		return this.options.format;
 	}
 
-	public setFormat(format: Exclude<keyof LoggerOptions['format'], 'level' | 'functions'>, value: string) {
+	public setFormat(
+		format: Exclude<keyof LoggerOptions['format'], 'level' | 'functions'>,
+		value: string,
+	) {
 		this.options.format[format] = value;
 	}
 
-	public getFormat(format: Exclude<keyof LoggerOptions['format'], 'level' | 'functions'>): string {
+	public getFormat(
+		format: Exclude<keyof LoggerOptions['format'], 'level' | 'functions'>,
+	): string {
 		return this.options.format[format] + styles.reset;
 	}
 
@@ -246,7 +273,10 @@ export class Options {
 	// Level formats
 	public setLevelFormats(levels: Partial<LoggerOptions['format']['level']>) {
 		this.options.format.level = merge(this.options.format.level, levels);
-		for (const [level, format] of Object.entries(levels) as [LogType, FormatResult][]) {
+		for (const [level, format] of Object.entries(levels) as [
+			LogType,
+			FormatResult,
+		][]) {
 			this.setLevelFormat(level, format.str);
 		}
 	}
@@ -264,8 +294,8 @@ export class Options {
 
 		this.options.format.level[level] = {
 			str: value,
-			ansi: ansiStr
-		}
+			ansi: ansiStr,
+		};
 	}
 
 	public getLevelFormat(level: LogType | LogLevel): FormatResult {
