@@ -32,7 +32,7 @@ export interface StringifyOptions {
 	themes: ThemeOptions;
 }
 
-export type StringifyFunc = (...args: unknown[]) => string;
+export type StringifyFunc = (level: LogLevel, ...args: LogArgs) => string;
 
 // Log level
 export enum LogLevel {

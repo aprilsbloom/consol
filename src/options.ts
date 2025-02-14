@@ -1,4 +1,4 @@
-import type { Theme } from 'cli-highlight';
+import { DEFAULT_THEME, highlight, type Theme } from 'cli-highlight';
 import { merge } from 'lodash';
 import { LogLevel } from './types';
 import type {
@@ -9,6 +9,7 @@ import type {
 	LogArgs,
 	LogQueue,
 	StringifyOptions,
+	StringifyFunc,
 	ThemeOptions,
 } from './types';
 import type { Consol } from '.';
@@ -153,6 +154,76 @@ export class Options {
 	}
 
 	// Stringify
+	public stringify(level: LogLevel, ...args: LogArgs): string {
+		const res = args
+			.flatMap((arg: any) => {
+				const argType = typeof arg;
+				if (argType === 'string') return arg;
+				if (argType === 'number') return (arg as number).toString();
+				if (argType === 'bigint') return `${(arg as bigint).toString()}n`;
+				if (argType === 'symbol') return (arg as symbol).toString();
+
+				if (argType === 'boolean') {
+					return highlight((arg as boolean).toString(), {
+						language: 'javascript',
+						theme: this.getTheme('javascript'),
+					});
+				}
+
+				if (argType === 'function') {
+					return highlight(arg.toString(), {
+						language: 'javascript',
+						theme: this.getTheme('javascript'),
+					});
+				}
+
+				if (arg instanceof Error) {
+					return highlight(arg.stack ?? arg.message, {
+						language: 'javascript',
+						theme: this.getTheme('javascript'),
+					});
+				}
+
+				if (argType === 'object') {
+					// if the toString method is the default Object.toString, assume
+					// that it's a plain object and stringify it
+					if (arg.toString?.toString().includes('[native code]')) {
+						return highlight(
+							JSON.stringify(arg, (_, val) => {
+								if (typeof val === 'bigint') return `${val.toString()}n`;
+								if (typeof val === 'symbol') return val.toString();
+
+								if (typeof val === 'function') {
+									return highlight(val.toString(), {
+										language: 'javascript',
+										theme: this.getTheme('javascript'),
+									});
+								}
+
+								// if val has .toJSON method, use it
+								if (val?.toJSON) return val.toJSON?.();
+
+								// otherwise, return val as is
+								return val;
+							}, this.opts.stringify.indent),
+							{
+								language: 'json',
+								theme: this.getTheme('json'),
+							}
+						)
+					}
+
+					// otherwise, use the custom toString method
+					return arg.toString();
+				}
+
+				return arg.toString();
+			})
+			.join(' ');
+
+		return res;
+	}
+
 	public getStringifyOptions(): StringifyOptions {
 		return this.opts.stringify;
 	}
@@ -174,7 +245,7 @@ export class Options {
 	}
 
 	public getTheme(name: string): Theme | undefined {
-		return this.opts.stringify.themes[name];
+		return this.opts.stringify.themes[name] ?? DEFAULT_THEME;
 	}
 
 	public setThemes(themes: ThemeOptions): void {

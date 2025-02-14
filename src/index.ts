@@ -9,8 +9,8 @@ export class Consol {
 		this.options = new Options(this, opts);
 	}
 
-	public customLog(level: LogLevel, args: LogArgs): string {
-		// add log args to queue if paused
+	public customLog(level: LogLevel, ...args: LogArgs): string {
+		// add log to queue if paused
 		if (this.options.isPaused()) {
 			this.options.addLogToQueue(level, args);
 			return '';
@@ -20,36 +20,37 @@ export class Consol {
 		if (!this.options.canLog(level)) return '';
 
 		// stringify args
-
-		return '';
+		const str = this.options.stringify(level, ...args);
+		console.log(str);
+		return str;
 	}
 
 	public log(...args: LogArgs): string {
-		return this.customLog(LogLevel.Log, args);
+		return this.customLog(LogLevel.Log, ...args);
 	}
 
 	public info(...args: LogArgs): string {
-		return this.customLog(LogLevel.Info, args);
+		return this.customLog(LogLevel.Info, ...args);
 	}
 
 	public success(...args: LogArgs): string {
-		return this.customLog(LogLevel.Success, args);
+		return this.customLog(LogLevel.Success, ...args);
 	}
 
 	public warning(...args: LogArgs): string {
-		return this.customLog(LogLevel.Warning, args);
+		return this.customLog(LogLevel.Warning, ...args);
 	}
 
 	public error(...args: LogArgs): string {
-		return this.customLog(LogLevel.Error, args);
+		return this.customLog(LogLevel.Error, ...args);
 	}
 
 	public fatal(...args: LogArgs): string {
-		return this.customLog(LogLevel.Fatal, args);
+		return this.customLog(LogLevel.Fatal, ...args);
 	}
 
 	public debug(...args: LogArgs): string {
-		return this.customLog(LogLevel.Debug, args);
+		return this.customLog(LogLevel.Debug, ...args);
 	}
 
 	public enable(): void {
@@ -70,4 +71,7 @@ export class Consol {
 }
 
 export const consol = new Consol();
-export const createConsol = (opts: Partial<ConsolOptions>) => new Consol(opts);
+export const create = (opts: Partial<ConsolOptions>) => new Consol(opts);
+export const createConsol = create;
+
+consol.log(true, false, [1, 2, 3], { a: 1, b: 2, c: 3, d: Symbol('meow') });
