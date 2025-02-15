@@ -1,6 +1,7 @@
+import Formatter from './formatter';
+import { Options } from './options';
 import type { ConsolOptions, LogArgs } from './types';
 import { LogLevel } from './types';
-import { Options } from './options';
 
 export class Consol {
 	public options: Options;
@@ -21,8 +22,23 @@ export class Consol {
 
 		// stringify args
 		const str = this.options.stringify(...args);
-		console.log(str);
-		return str;
+
+		const res = new Formatter(
+			this.options,
+			this.options.getFormat('log'),
+			level,
+			str,
+		)
+			.formatMessage()
+			.formatLevel()
+			.formatDate()
+			.formatCode()
+			.formatEnv()
+			.formatHex()
+			.formatStyle();
+
+		console.log(res.result());
+		return res.result();
 	}
 
 	public log(...args: LogArgs): string {
@@ -74,13 +90,12 @@ export const consol = new Consol();
 export const create = (opts: Partial<ConsolOptions>) => new Consol(opts);
 export const createConsol = create;
 
-// consol.options.setShouldStringifyFunctions(false);
 consol.log({
 	a: 'b',
 	toJson: () => {
 		return {
-			abc: 'def'
-		}
+			abc: 'def',
+		};
 	},
-	meow: () => '235253'
-})
+	meow: () => '235253',
+});

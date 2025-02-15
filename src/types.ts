@@ -20,13 +20,9 @@ export interface FormatOptions {
 	path: string;
 }
 
-export type LevelFormatOptions = Record<Exclude<LogType, 'none'>, LevelFormat>;
-export interface LevelFormat {
-	str: string;
-	ansi?: string;
-}
-
+export type LevelFormatOptions = Record<Exclude<LogType, 'none'>, string>;
 export type ThemeOptions = Record<string, Theme>;
+
 export interface StringifyOptions {
 	indent: number;
 	shouldStringifyFunctions: boolean;
@@ -53,7 +49,7 @@ export type LogType = EnumToLowercase<typeof LogLevel>;
 export function logTypeToLogLevel(type: LogType): LogLevel {
 	return (
 		LogLevel[
-			(type.charAt(0).toUpperCase() + type.slice(1)) as keyof typeof LogLevel
+		(type.charAt(0).toUpperCase() + type.slice(1)) as keyof typeof LogLevel
 		] ?? LogLevel.None
 	);
 }

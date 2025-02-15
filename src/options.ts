@@ -1,21 +1,21 @@
-import { DEFAULT_THEME, highlight } from 'cli-highlight';
 import type { Theme } from 'cli-highlight';
+import { DEFAULT_THEME, highlight } from 'cli-highlight';
 import { merge } from 'lodash';
-import { LogLevel } from './types';
+import type { Consol } from '.';
 import type {
 	ConsolOptions,
 	FormatOptions,
-	LevelFormat,
 	LevelFormatOptions,
 	LogArgs,
 	LogQueue,
 	StringifyOptions,
 	ThemeOptions,
 } from './types';
-import type { Consol } from '.';
+import { LogLevel, logLevelToLogType } from './types';
 
 export class Options {
 	private consol: Consol;
+
 	public opts: ConsolOptions = {
 		enabled: true,
 		paused: false,
@@ -27,13 +27,13 @@ export class Options {
 		},
 
 		levelFormats: {
-			log: { str: '!{hex:fg:#a8a8a8}!' },
-			info: { str: '!{hex:fg:#a8a8a8}!' },
-			success: { str: '!{hex:fg:#79ef77}!' },
-			warning: { str: '!{hex:fg:#efe777}!' },
-			error: { str: '!{hex:fg:#ef8d77}!' },
-			fatal: { str: '!{hex:fg:#ef8d77}!' },
-			debug: { str: '!{hex:fg:#a8a8a8}!' },
+			log: '!{hex:fg:#a8a8a8}!',
+			info: '!{hex:fg:#a8a8a8}!',
+			success: '!{hex:fg:#79ef77}!',
+			warning: '!{hex:fg:#efe777}!',
+			error: '!{hex:fg:#ef8d77}!',
+			fatal: '!{hex:fg:#ef8d77}!',
+			debug: '!{hex:fg:#a8a8a8}!',
 		},
 
 		stringify: {
@@ -83,7 +83,7 @@ export class Options {
 	}
 
 	public canLog(level?: LogLevel): boolean {
-		if (!this.opts.enabled || this.opts.paused) return false;
+		if (!this.opts.enabled) return false;
 		return level ? level <= this.opts.level : true;
 	}
 
@@ -139,7 +139,12 @@ export class Options {
 		return this.opts.levelFormats;
 	}
 
-	public getLevelFormat(level: keyof LevelFormatOptions): LevelFormat {
+	public getLevelFormat(level: LogLevel | keyof LevelFormatOptions): string {
+		if (typeof level === 'number') {
+			if (level === LogLevel.None) return '';
+			level = logLevelToLogType(level) as keyof LevelFormatOptions;
+		}
+
 		return this.opts.levelFormats[level];
 	}
 
@@ -147,10 +152,7 @@ export class Options {
 		this.opts.levelFormats = merge(this.opts.levelFormats, formats);
 	}
 
-	public setLevelFormat(
-		level: keyof LevelFormatOptions,
-		format: LevelFormat,
-	): void {
+	public setLevelFormat(level: keyof LevelFormatOptions, format: string): void {
 		this.opts.levelFormats[level] = format;
 	}
 
@@ -192,28 +194,33 @@ export class Options {
 					// that it's a plain object and stringify it
 					if (arg.toString?.toString().includes('[native code]')) {
 						return highlight(
-							JSON.stringify(arg, (key, val) => {
-								const type = typeof val;
+							JSON.stringify(
+								arg,
+								(key, val) => {
+									const type = typeof val;
 
-								// if val has .toJSON method, use it
-								if (key === 'toJSON' || key === 'toJson') {
-									return val();
-								}
+									// if val has .toJSON method, use it
+									if (key === 'toJSON' || key === 'toJson') {
+										return val();
+									}
 
-								if (type === 'bigint') return `${val.toString()}n`;
-								if (type === 'symbol') return val.toString();
-								if (type === 'function') return this.opts.stringify.shouldStringifyFunctions
-									? val.toString()
-									: '[function]';
+									if (type === 'bigint') return `${val.toString()}n`;
+									if (type === 'symbol') return val.toString();
+									if (type === 'function')
+										return this.opts.stringify.shouldStringifyFunctions
+											? val.toString()
+											: '[function]';
 
-								// otherwise, return val as is
-								return val;
-							}, this.opts.stringify.indent),
+									// otherwise, return val as is
+									return val;
+								},
+								this.opts.stringify.indent,
+							),
 							{
 								language: 'json',
 								theme: this.getTheme('json'),
-							}
-						)
+							},
+						);
 					}
 
 					// otherwise, use the custom toString method
