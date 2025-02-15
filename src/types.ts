@@ -29,10 +29,9 @@ export interface LevelFormat {
 export type ThemeOptions = Record<string, Theme>;
 export interface StringifyOptions {
 	indent: number;
+	shouldStringifyFunctions: boolean;
 	themes: ThemeOptions;
 }
-
-export type StringifyFunc = (level: LogLevel, ...args: LogArgs) => string;
 
 // Log level
 export enum LogLevel {

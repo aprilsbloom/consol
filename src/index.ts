@@ -20,7 +20,7 @@ export class Consol {
 		if (!this.options.canLog(level)) return '';
 
 		// stringify args
-		const str = this.options.stringify(level, ...args);
+		const str = this.options.stringify(...args);
 		console.log(str);
 		return str;
 	}
@@ -74,4 +74,13 @@ export const consol = new Consol();
 export const create = (opts: Partial<ConsolOptions>) => new Consol(opts);
 export const createConsol = create;
 
-consol.log(true, false, [1, 2, 3], { a: 1, b: 2, c: 3, d: Symbol('meow') });
+// consol.options.setShouldStringifyFunctions(false);
+consol.log({
+	a: 'b',
+	toJson: () => {
+		return {
+			abc: 'def'
+		}
+	},
+	meow: () => '235253'
+})

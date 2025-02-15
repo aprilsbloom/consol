@@ -1,4 +1,5 @@
-import { DEFAULT_THEME, highlight, type Theme } from 'cli-highlight';
+import { DEFAULT_THEME, highlight } from 'cli-highlight';
+import type { Theme } from 'cli-highlight';
 import { merge } from 'lodash';
 import { LogLevel } from './types';
 import type {
@@ -9,7 +10,6 @@ import type {
 	LogArgs,
 	LogQueue,
 	StringifyOptions,
-	StringifyFunc,
 	ThemeOptions,
 } from './types';
 import type { Consol } from '.';
@@ -38,6 +38,7 @@ export class Options {
 
 		stringify: {
 			indent: 2,
+			shouldStringifyFunctions: true,
 			themes: {},
 		},
 	};
@@ -154,27 +155,29 @@ export class Options {
 	}
 
 	// Stringify
-	public stringify(level: LogLevel, ...args: LogArgs): string {
+	public stringify(...args: LogArgs): string {
 		const res = args
 			.flatMap((arg: any) => {
-				const argType = typeof arg;
-				if (argType === 'string') return arg;
-				if (argType === 'number') return (arg as number).toString();
-				if (argType === 'bigint') return `${(arg as bigint).toString()}n`;
-				if (argType === 'symbol') return (arg as symbol).toString();
+				const type = typeof arg;
+				if (type === 'string') return arg;
+				if (type === 'number') return (arg as number).toString();
+				if (type === 'bigint') return `${(arg as bigint).toString()}n`;
+				if (type === 'symbol') return (arg as symbol).toString();
 
-				if (argType === 'boolean') {
+				if (type === 'boolean') {
 					return highlight((arg as boolean).toString(), {
 						language: 'javascript',
 						theme: this.getTheme('javascript'),
 					});
 				}
 
-				if (argType === 'function') {
-					return highlight(arg.toString(), {
-						language: 'javascript',
-						theme: this.getTheme('javascript'),
-					});
+				if (type === 'function') {
+					return this.opts.stringify.shouldStringifyFunctions
+						? highlight(arg.toString(), {
+							language: 'javascript',
+							theme: this.getTheme('javascript'),
+						})
+						: '[function]';
 				}
 
 				if (arg instanceof Error) {
@@ -184,24 +187,24 @@ export class Options {
 					});
 				}
 
-				if (argType === 'object') {
+				if (type === 'object') {
 					// if the toString method is the default Object.toString, assume
 					// that it's a plain object and stringify it
 					if (arg.toString?.toString().includes('[native code]')) {
 						return highlight(
-							JSON.stringify(arg, (_, val) => {
-								if (typeof val === 'bigint') return `${val.toString()}n`;
-								if (typeof val === 'symbol') return val.toString();
-
-								if (typeof val === 'function') {
-									return highlight(val.toString(), {
-										language: 'javascript',
-										theme: this.getTheme('javascript'),
-									});
-								}
+							JSON.stringify(arg, (key, val) => {
+								const type = typeof val;
 
 								// if val has .toJSON method, use it
-								if (val?.toJSON) return val.toJSON?.();
+								if (key === 'toJSON' || key === 'toJson') {
+									return val();
+								}
+
+								if (type === 'bigint') return `${val.toString()}n`;
+								if (type === 'symbol') return val.toString();
+								if (type === 'function') return this.opts.stringify.shouldStringifyFunctions
+									? val.toString()
+									: '[function]';
 
 								// otherwise, return val as is
 								return val;
@@ -236,8 +239,16 @@ export class Options {
 		this.opts.stringify.indent = indent;
 	}
 
+	public setShouldStringifyFunctions(val: boolean) {
+		this.opts.stringify.shouldStringifyFunctions = val;
+	}
+
 	public getStringifyIndent(): number {
 		return this.opts.stringify.indent;
+	}
+
+	public shouldStringifyFunctions(): boolean {
+		return this.opts.stringify.shouldStringifyFunctions;
 	}
 
 	public getThemes(): ThemeOptions {
